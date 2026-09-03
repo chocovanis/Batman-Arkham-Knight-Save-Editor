@@ -1,0 +1,13 @@
+[project]
+name = "ak-riddler-save-editor"
+version = "0.1.0"
+description = "Riddler collectible save editor for Batman: Arkham Knight"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+gui = ["sv-ttk"]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

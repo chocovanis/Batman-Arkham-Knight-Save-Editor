@@ -1,0 +1,72 @@
+# ---------------------------------------------------------------
+# Game save data — NEVER COMMIT. Copyrighted, large, and not ours.
+# The research corpus lives OUTSIDE this repo (in the parent folder)
+# so it cannot be staged even by accident. These rules are defence
+# in depth, not the primary protection.
+# ---------------------------------------------------------------
+*.sgd
+profile.bin
+LBGameCache.dat
+remotecache.vdf
+captures/
+proof/
+
+# Local-only development notes (see DEVELOPMENT.md)
+DEVELOPMENT.md
+docs/
+
+# ---------------------------------------------------------------
+# Executables & binaries — NEVER COMMIT. Ship via GitHub Releases.
+# ---------------------------------------------------------------
+*.exe
+*.dll
+*.so
+*.dylib
+*.app
+*.msi
+*.dmg
+*.obj
+*.o
+*.a
+*.lib
+*.pdb
+
+# Build output
+build/
+dist/
+out/
+bin/
+release/
+target/
+*.spec
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+credentials.json
+secrets.json
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*~
+
+# Logs & temp
+*.log
+*.tmp
+*.cache
