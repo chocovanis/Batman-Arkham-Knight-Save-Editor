@@ -148,20 +148,30 @@ def test_ordinary_screens_are_left_alone_and_large_ones_scale_up():
     assert app.ui_font_scale(3840) > 1.2
 
 
-def test_font_scaling_is_not_confined_to_the_fallback_theme():
-    """The scaling once lived inside the `except ImportError` branch that runs
-    only when sv_ttk is absent — so it did nothing in the packaged build, which
-    ships sv_ttk. Glyphs measured 10px on a 4K screen because of it.
+def test_theming_has_no_optional_engine_behind_a_try_except():
+    """The type sizing once lived in an `except ImportError` branch that ran
+    only when sv_ttk was absent — so it did nothing in the packaged build,
+    which shipped sv_ttk, and glyphs measured 10px on a 4K screen.
 
-    Assert structurally that the sizing runs unconditionally: the font block
-    must sit at function-body indentation, not nested inside the try/except.
+    sv_ttk is gone now (224 ms/frame on resize against clam's 39), and the
+    sizing must stay unconditional. Assert structurally that apply_theme has
+    no try/except around its styling and still sizes the named fonts.
     """
     import inspect
     import textwrap
 
     src = textwrap.dedent(inspect.getsource(app.apply_theme))
     body = src.split('"""', 2)[-1]
-    sizing = [ln for ln in body.splitlines() if "nametofont" in ln]
-    assert sizing, "the named-font sizing loop has gone missing"
-    # 8 spaces or more would mean it is inside the try/except suite.
-    assert all(len(ln) - len(ln.lstrip()) <= 12 for ln in sizing)
+
+    assert "nametofont" in body, "the named-font sizing has gone missing"
+    assert "sv_ttk" not in body, "an optional theme engine came back into the body"
+
+    # Every styling call must sit at function-body indentation. Anything deeper
+    # means it is nested inside a conditional or a try, which is exactly how the
+    # sizing came to be skipped in the shipped build.
+    for marker in ('style.theme_use', 'style.configure(".", ',
+                   'style.configure("Treeview"'):
+        lines = [ln for ln in body.splitlines() if marker in ln]
+        assert lines, f"{marker} has gone missing from apply_theme"
+        for ln in lines:
+            assert len(ln) - len(ln.lstrip()) == 4, f"{marker} is nested: {ln!r}"

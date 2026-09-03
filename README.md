@@ -72,8 +72,8 @@ cd Batman-Arkham-Knight-Save-Editor
 python ak_riddler_editor.py
 ```
 
-Python 3.10 or newer. No dependencies are required; `pip install sv-ttk` gets
-you a nicer theme if you want one.
+Python 3.10 or newer. There are no dependencies at all — everything it uses
+ships with Python.
 
 ---
 

@@ -6,7 +6,6 @@ requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
-gui = ["sv-ttk"]
 dev = ["pytest"]
 
 [tool.pytest.ini_options]

@@ -47,68 +47,105 @@ def ui_font_scale(screen_w: int) -> float:
 
 
 def apply_theme(root: tk.Tk, mode: str, scale: float = 1.0) -> dict:
-    """Apply a palette. Uses sv_ttk when available, else a hand-built theme."""
+    """Apply a palette and size the type for this display.
+
+    Hand-built on ttk's `clam`, deliberately, and with no optional theme
+    engine behind a try/except. sv_ttk was measured at 224 ms per resize
+    frame against clam's 39 ms on the same window — 4.5 fps versus 26 —
+    because its widget elements are images that get rescaled on every
+    redraw. The cost is independent of what the tree holds (emptying it
+    changed nothing), so it is the theme, not our data. Dragging a window
+    edge is the single most common thing a user does to a window, and it
+    is not worth trading for rounded corners.
+
+    Dropping it also removes the last runtime dependency, which is how the
+    other editors in this family are built.
+    """
     palette = PALETTES[mode]
     pt = lambda size: max(1, round(size * scale))
-    try:
-        import sv_ttk
-        sv_ttk.set_theme(mode)
-    except Exception:
-        style = ttk.Style(root)
-        style.theme_use("clam")
-        style.configure(".", background=palette["bg"], foreground=palette["text"],
-                        fieldbackground=palette["surface"], borderwidth=0,
-                        font=(UI_FONT, pt(BASE_PT)))
-        style.configure("TFrame", background=palette["bg"])
-        style.configure("TLabel", background=palette["bg"], foreground=palette["text"])
-        style.configure("Muted.TLabel", foreground=palette["muted"])
-        style.configure("Heading.TLabel",
-                        font=(UI_FONT + " Semibold", pt(HEADING_PT)))
-        style.configure("TButton", padding=(round(14 * scale), round(7 * scale)),
-                        background=palette["surface"])
-        style.map("TButton",
-                  background=[("active", palette["accent"]), ("disabled", palette["bg"])],
-                  foreground=[("active", "#ffffff"), ("disabled", palette["muted"])])
-        style.configure("Accent.TButton", background=palette["accent"], foreground="#ffffff")
-        # Row height has to grow with the type or the rows clip their own text.
-        style.configure("Treeview", background=palette["surface"],
-                        fieldbackground=palette["surface"], foreground=palette["text"],
-                        rowheight=round(ROW_PX * scale), borderwidth=0,
-                        font=(UI_FONT, pt(BASE_PT)))
-        style.configure("Treeview.Heading",
-                        font=(UI_FONT + " Semibold", pt(BASE_PT)))
-        style.configure("TCheckbutton", background=palette["bg"],
-                        foreground=palette["text"])
-        style.configure("TScrollbar", background=palette["surface"],
-                        troughcolor=palette["bg"], arrowcolor=palette["text"],
-                        borderwidth=0)
-        # A readonly Combobox keeps clam's own field colours unless the readonly
-        # state is mapped explicitly, which in dark mode leaves the selected
-        # value as dark grey text on a dark field - effectively invisible.
-        style.configure("TCombobox", arrowcolor=palette["text"])
-        style.map("TCombobox",
-                  fieldbackground=[("readonly", palette["surface"])],
-                  background=[("readonly", palette["surface"])],
-                  foreground=[("readonly", palette["text"])],
-                  selectbackground=[("readonly", palette["surface"])],
-                  selectforeground=[("readonly", palette["text"])])
-        # The dropdown itself is a classic tk Listbox, reachable only this way.
-        root.option_add("*TCombobox*Listbox.background", palette["surface"])
-        root.option_add("*TCombobox*Listbox.foreground", palette["text"])
-        root.option_add("*TCombobox*Listbox.selectBackground", palette["accent"])
-        root.option_add("*TCombobox*Listbox.selectForeground", "#ffffff")
+    px = lambda n: round(n * scale)
 
-    # Type sizing is applied to BOTH branches, deliberately and last.
-    #
-    # sv_ttk installs its own theme with its own fonts, so while this lived
-    # inside the fallback the scale silently did nothing whenever sv_ttk was
-    # present — which is precisely the packaged build, because the release
-    # workflow pip-installs sv-ttk. The app measured 10px glyphs on a 4K panel
-    # for exactly that reason: the code that was supposed to enlarge them was
-    # in the branch that never ran.
-    #
-    # Named fonts first (ttk themes derive from them, and classic widgets use
-    # them directly), then the specific styles, so neither engine can win.
+    style = ttk.Style(root)
+    style.theme_use("clam")
+
+    style.configure(".", background=palette["bg"], foreground=palette["text"],
+                    fieldbackground=palette["surface"], borderwidth=0,
+                    font=(UI_FONT, pt(BASE_PT)))
+    style.configure("TFrame", background=palette["bg"])
+    style.configure("TLabel", background=palette["bg"], foreground=palette["text"],
+                    font=(UI_FONT, pt(BASE_PT)))
+    style.configure("Muted.TLabel", foreground=palette["muted"],
+                    font=(UI_FONT, pt(BASE_PT)))
+    style.configure("Heading.TLabel", font=(UI_FONT + " Semibold", pt(HEADING_PT)))
+
+    style.configure("TButton", padding=(px(14), px(7)), background=palette["surface"],
+                    bordercolor=palette["border"], lightcolor=palette["surface"],
+                    darkcolor=palette["surface"], font=(UI_FONT, pt(BASE_PT)))
+    style.map("TButton",
+              background=[("active", palette["accent"]), ("disabled", palette["bg"])],
+              foreground=[("active", "#ffffff"), ("disabled", palette["muted"])])
+    style.configure("Accent.TButton", background=palette["accent"], foreground="#ffffff",
+                    lightcolor=palette["accent"], darkcolor=palette["accent"])
+    style.map("Accent.TButton",
+              background=[("active", palette["accent"]), ("disabled", palette["bg"])],
+              foreground=[("disabled", palette["muted"])])
+
+    style.configure("TCheckbutton", background=palette["bg"], foreground=palette["text"],
+                    font=(UI_FONT, pt(BASE_PT)), indicatorsize=px(14),
+                    padding=(0, px(4)))
+    style.map("TCheckbutton",
+              background=[("active", palette["bg"])],
+              indicatorcolor=[("selected", palette["accent"]),
+                              ("!selected", palette["surface"])])
+
+    style.configure("TScrollbar", background=palette["surface"],
+                    troughcolor=palette["bg"], arrowcolor=palette["text"],
+                    bordercolor=palette["bg"], borderwidth=0)
+
+    # clam draws a Combobox field with its own 3-D border, which shows up as a
+    # bright rectangle around the control on a dark palette. Flatten it, and
+    # map the readonly state explicitly or the selected value renders as dark
+    # grey on a dark field.
+    style.configure("TCombobox", arrowcolor=palette["text"],
+                    bordercolor=palette["border"], lightcolor=palette["surface"],
+                    darkcolor=palette["surface"], fieldbackground=palette["surface"],
+                    background=palette["surface"], foreground=palette["text"],
+                    arrowsize=px(14), padding=(px(6), px(4)),
+                    font=(UI_FONT, pt(BASE_PT)))
+    style.map("TCombobox",
+              fieldbackground=[("readonly", palette["surface"])],
+              background=[("readonly", palette["surface"])],
+              foreground=[("readonly", palette["text"])],
+              bordercolor=[("focus", palette["accent"])],
+              lightcolor=[("focus", palette["surface"])],
+              darkcolor=[("focus", palette["surface"])],
+              selectbackground=[("readonly", palette["surface"])],
+              selectforeground=[("readonly", palette["text"])])
+    # The dropdown list is a classic tk Listbox, reachable only this way.
+    root.option_add("*TCombobox*Listbox.background", palette["surface"])
+    root.option_add("*TCombobox*Listbox.foreground", palette["text"])
+    root.option_add("*TCombobox*Listbox.selectBackground", palette["accent"])
+    root.option_add("*TCombobox*Listbox.selectForeground", "#ffffff")
+
+    # Row height must come from the font's own metrics, not a scaled constant.
+    # A fixed multiplier is a guess about how tall the type renders, and when
+    # it guesses low the rows clip their own descenders — "Miagani", "Stagg"
+    # and "HQ" all lost their tails at rowheight = 24 * 1.4.
+    body = tkfont.Font(root=root, family=UI_FONT, size=pt(BASE_PT))
+    row_h = max(px(ROW_PX), body.metrics("linespace") + px(8))
+    style.configure("Treeview", background=palette["surface"],
+                    fieldbackground=palette["surface"], foreground=palette["text"],
+                    rowheight=row_h, borderwidth=0, font=(UI_FONT, pt(BASE_PT)))
+    style.map("Treeview",
+              background=[("selected", palette["accent"])],
+              foreground=[("selected", "#ffffff")])
+    style.configure("Treeview.Heading", background=palette["bg"],
+                    foreground=palette["text"], relief="flat", borderwidth=0,
+                    padding=(px(4), px(6)),
+                    font=(UI_FONT + " Semibold", pt(BASE_PT)))
+    style.map("Treeview.Heading", background=[("active", palette["bg"])])
+
+    # Named fonts too: classic widgets and dialogs use these directly.
     for name, family, size in (
         ("TkDefaultFont", UI_FONT, BASE_PT),
         ("TkTextFont", UI_FONT, BASE_PT),
@@ -121,24 +158,6 @@ def apply_theme(root: tk.Tk, mode: str, scale: float = 1.0) -> dict:
             tkfont.nametofont(name, root=root).configure(family=family, size=pt(size))
         except Exception:
             pass
-
-    style = ttk.Style(root)
-    style.configure(".", font=(UI_FONT, pt(BASE_PT)))
-    style.configure("TLabel", font=(UI_FONT, pt(BASE_PT)))
-    style.configure("Muted.TLabel", font=(UI_FONT, pt(BASE_PT)))
-    style.configure("Heading.TLabel", font=(UI_FONT + " Semibold", pt(HEADING_PT)))
-    style.configure("TButton", font=(UI_FONT, pt(BASE_PT)))
-    style.configure("Accent.TButton", font=(UI_FONT, pt(BASE_PT)))
-    style.configure("TCheckbutton", font=(UI_FONT, pt(BASE_PT)))
-    style.configure("TCombobox", font=(UI_FONT, pt(BASE_PT)))
-    # Row height must come from the font's own metrics, not a scaled constant.
-    # A fixed multiplier is a guess about how tall the type will render, and
-    # when it guesses low the rows clip their own descenders — "Miagani",
-    # "Stagg", "HQ" all lost their tails at rowheight = 24 * 1.4.
-    body = tkfont.Font(root=root, family=UI_FONT, size=pt(BASE_PT))
-    row_h = max(round(ROW_PX * scale), body.metrics("linespace") + round(8 * scale))
-    style.configure("Treeview", font=(UI_FONT, pt(BASE_PT)), rowheight=row_h)
-    style.configure("Treeview.Heading", font=(UI_FONT + " Semibold", pt(BASE_PT)))
 
     root.configure(background=palette["bg"])
     return palette
@@ -349,7 +368,16 @@ class EditorApp:
                                  selectmode="extended")
         self.tree.heading("#0", text="Collectible")
         self.tree.heading("state", text="Status")
-        self.tree.column("state", width=110, anchor="center", stretch=False)
+        # Width measured from the widest value the column can actually hold,
+        # in the font it will actually be drawn in. A fixed 110px was already
+        # tight at 100% and cut "collected" clean off once the type scaled up.
+        cell = tkfont.Font(root=self.root,
+                           family=UI_FONT, size=round(BASE_PT * self.ui_scale))
+        state_w = max(cell.measure(s) for s in ("collected", "000/000", "Status"))
+        state_w += round(32 * self.ui_scale)
+        self.tree.column("state", width=state_w, minwidth=state_w,
+                         anchor="center", stretch=False)
+        self.tree.column("#0", minwidth=round(220 * self.ui_scale), stretch=True)
         sb = ttk.Scrollbar(f, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=sb.set)
         self.tree.pack(side="left", fill="both", expand=True)
@@ -402,11 +430,22 @@ class EditorApp:
                    command=lambda: self.reveal(self.backup_root() if self.save_path else None)
                    ).pack(side="left")
 
-        ttk.Checkbutton(
+        # Classic tk.Checkbutton, not ttk. clam draws its checked indicator as
+        # a crossed box, which reads just as easily as "disabled" or "no" as it
+        # does as "yes" - a bad property for the one control that decides
+        # whether the save ends at 242 or 243. The classic widget draws a real
+        # tick when on and an empty box when off, which is unambiguous.
+        self.leave_one_check = tk.Checkbutton(
             f, variable=self.leave_one,
             text="Leave one collectible uncollected, so achievements still "
                  "unlock when you pick it up in game",
-        ).pack(anchor="w", pady=(0, 8))
+            anchor="w", highlightthickness=0, bd=0,
+            font=(UI_FONT, round(BASE_PT * self.ui_scale)),
+            background=self.palette["bg"], foreground=self.palette["text"],
+            selectcolor=self.palette["surface"],
+            activebackground=self.palette["bg"],
+            activeforeground=self.palette["text"])
+        self.leave_one_check.pack(anchor="w", fill="x", pady=(0, 8))
 
         self.log_widget = tk.Text(f, height=9, state="disabled", wrap="word",
                                   relief="flat",
@@ -610,9 +649,27 @@ class EditorApp:
                 return
         self.activity.log("No save folder detected — use Open Save…")
 
+    def _open_dialog_dir(self) -> Path:
+        """Where "Open Save…" should start.
+
+        The folder of whatever is already loaded, else the auto-detected save
+        folder, else the Desktop — never the process working directory, which
+        for a packaged build is wherever the shortcut happened to point.
+        """
+        if self.save_path and self.save_path.parent.is_dir():
+            return self.save_path.parent
+        for d in find_save_dirs():
+            if d.is_dir():
+                return d
+        desktop = Path.home() / "Desktop"
+        return desktop if desktop.is_dir() else Path.home()
+
     def on_open(self):
-        path = filedialog.askopenfilename(title="Open Arkham Knight save",
-                                          filetypes=[("Save files", "BAK1Save*.sgd")])
+        path = filedialog.askopenfilename(
+            title="Open Arkham Knight save",
+            initialdir=str(self._open_dialog_dir()),
+            filetypes=[("Arkham Knight saves", "BAK1Save*.sgd"),
+                       ("All files", "*.*")])
         if path:
             self.load(Path(path))
 
@@ -711,10 +768,15 @@ class EditorApp:
         self.palette = apply_theme(self.root,
                                    detect_system_theme() if mode == "auto" else mode,
                                    self.ui_scale)
-        # The log is a classic tk.Text styled by explicit colours, so ttk
-        # restyling never reaches it. Without this it keeps the previous
-        # palette and can end up black on black.
+        # The log and the leave-one checkbox are classic tk widgets styled by
+        # explicit colours, so ttk restyling never reaches them. Without this
+        # they keep the previous palette and can end up black on black.
         self.activity.apply_palette(self.palette)
+        self.leave_one_check.configure(
+            background=self.palette["bg"], foreground=self.palette["text"],
+            selectcolor=self.palette["surface"],
+            activebackground=self.palette["bg"],
+            activeforeground=self.palette["text"])
 
 
 def main():
