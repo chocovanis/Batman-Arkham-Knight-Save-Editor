@@ -1,7 +1,7 @@
 # tests/test_sgd.py
 import struct
 import pytest
-from aksave.sgd import SgdFile, STEAM_SIZE, SgdError
+from aksave.sgd import SgdFile, STEAM_SIZE, SgdError, ARRAY_PREFIX
 
 
 def make_save(prefix=b"", sections=None, array_entries=None):
@@ -38,3 +38,40 @@ def test_reads_version_and_playtime():
     s = SgdFile(make_save())
     assert s.version == 6
     assert s.playtime_seconds == pytest.approx(3600.0)
+
+
+from aksave.sgd import encode_fstring, decode_fstring
+
+
+def test_encode_fstring_length_includes_nul():
+    assert encode_fstring("AB") == b"\x03\x00\x00\x00AB\x00"
+
+
+def test_decode_fstring_round_trips():
+    blob = encode_fstring("PickedUp_CityZ_Pickup_1")
+    value, end = decode_fstring(blob, 0)
+    assert value == "PickedUp_CityZ_Pickup_1"
+    assert end == len(blob)
+
+
+def test_flag_array_round_trip():
+    names = ["Alpha", "Beta_2", "PickedUp_CityZ_Pickup_1"]
+    save = make_save_with_flags(names)
+    s = SgdFile(save)
+    assert s.read_flags() == names
+
+
+def make_save_with_flags(names):
+    """Place a counted flag array at the location the real format uses."""
+    sec1_len = 4096
+    body = bytearray(STEAM_SIZE)
+    struct.pack_into("<I", body, 0x00, 6)
+    struct.pack_into("<I", body, 0x0C, sec1_len)
+    struct.pack_into("<f", body, 0x69, 3600.0)
+    arr = 57 + sec1_len + 11
+    body[arr - 11:arr] = ARRAY_PREFIX
+    struct.pack_into("<I", body, arr, len(names))
+    blob = b"".join(encode_fstring(n) for n in names)
+    body[arr + 4:arr + 4 + len(blob)] = blob
+    struct.pack_into("<I", body, 0x10, 11 + 4 + len(blob))
+    return bytes(body)

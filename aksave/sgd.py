@@ -50,5 +50,48 @@ class SgdFile:
     def playtime_seconds(self) -> float:
         return struct.unpack_from("<f", self.body, PLAYTIME_OFF)[0]
 
+    @property
+    def section2_start(self) -> int:
+        return 57 + self.u32(0x0C)
+
+    @property
+    def array_offset(self) -> int:
+        """The global flag array count field: 11 bytes into section 2."""
+        return self.section2_start + 11
+
+    def read_flags(self) -> list[str]:
+        off = self.array_offset
+        count = self.u32(off)
+        if count > 100_000:
+            raise SgdError(f"implausible flag count {count}")
+        pos, out = off + 4, []
+        for _ in range(count):
+            value, pos = decode_fstring(self.body, pos)
+            out.append(value)
+        self._array_end = pos
+        return out
+
+    @property
+    def array_end(self) -> int:
+        if not hasattr(self, "_array_end"):
+            self.read_flags()
+        return self._array_end
+
     def to_bytes(self) -> bytes:
         return bytes(self.prefix) + bytes(self.body)
+
+
+def encode_fstring(value: str) -> bytes:
+    """int32 length INCLUDING the NUL terminator, then ASCII, then NUL."""
+    data = value.encode("ascii")
+    return struct.pack("<i", len(data) + 1) + data + b"\x00"
+
+
+def decode_fstring(buf, off: int) -> tuple[str, int]:
+    n = struct.unpack_from("<i", buf, off)[0]
+    if n <= 0 or n > 512 or off + 4 + n > len(buf):
+        raise SgdError(f"bad FString length {n} at offset {off:#x}")
+    raw = bytes(buf[off + 4:off + 4 + n])
+    if raw[-1:] != b"\x00":
+        raise SgdError(f"unterminated FString at offset {off:#x}")
+    return raw[:-1].decode("ascii", "replace"), off + 4 + n
