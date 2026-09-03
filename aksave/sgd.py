@@ -9,7 +9,11 @@ from __future__ import annotations
 import struct
 
 STEAM_SIZE = 2428928
-SUM_OFFS = (0x0C, 0x10, 0x18, 0x20, 0x24, 0x28, 0x2C, 0x30, 0x34, 0x38)
+# Section lengths. 0x1C is zero in 51 of 53 corpus saves, which is exactly why
+# it was missed when the identity was first derived from a 7-file sample. Two
+# GOG saves carry 0x1C = 9247, and omitting it puts payload_end 9247 bytes early
+# — mid-FString. Including it, every corpus file validates.
+SUM_OFFS = (0x0C, 0x10, 0x18, 0x1C, 0x20, 0x24, 0x28, 0x2C, 0x30, 0x34, 0x38)
 SECTION2_LEN_OFF = 0x10
 PLAYTIME_OFF = 0x69
 ARRAY_PREFIX = bytes.fromhex("000000" + "1c" + "00000000000000")
@@ -95,7 +99,9 @@ class SgdFile:
             raise SgdError(f"declared payload end {end} outside file")
 
         # The tail must be zero padding; that is the space appends consume.
-        # Ten bytes of slack: one corpus file legitimately ends in zeros.
+        # The tail must be zero padding; that is the space appends consume.
+        # Non-zero data here means payload_end is wrong for this file, so the
+        # append arithmetic would be wrong too — refuse rather than guess.
         if any(self.body[end:]):
             raise SgdError("non-zero data found in tail padding")
 
