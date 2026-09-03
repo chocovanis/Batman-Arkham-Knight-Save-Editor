@@ -1,0 +1,32 @@
+name: build
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install pyinstaller sv-ttk pytest
+      - run: python -m pytest tests -v
+      - run: >
+          pyinstaller --onedir --noupx --noconsole
+          --name "AK-Riddler-Save-Editor"
+          --add-data "aksave/data/manifest.json;aksave/data"
+          ak_riddler_editor.py
+      - uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: dist/AK-Riddler-Save-Editor/AK-Riddler-Save-Editor.exe
+      - run: Compress-Archive dist/AK-Riddler-Save-Editor AK-Riddler-Save-Editor.zip
+      - uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with: { files: AK-Riddler-Save-Editor.zip }
