@@ -1,7 +1,7 @@
 # tests/test_sgd.py
 import struct
 import pytest
-from aksave.sgd import SgdFile, STEAM_SIZE, SgdError, ARRAY_PREFIX
+from aksave.sgd import SgdFile, STEAM_SIZE, SgdError, ARRAY_PREFIX, SUM_OFFS
 
 
 def make_save(prefix=b"", sections=None, array_entries=None):
@@ -75,3 +75,27 @@ def make_save_with_flags(names):
     body[arr + 4:arr + 4 + len(blob)] = blob
     struct.pack_into("<I", body, 0x10, 11 + 4 + len(blob))
     return bytes(body)
+
+
+def test_payload_end_matches_section_sum():
+    s = SgdFile(make_save_with_flags(["A"]))
+    assert s.payload_end == 57 + sum(s.u32(o) for o in SUM_OFFS)
+
+
+def test_validate_accepts_good_file():
+    SgdFile(make_save_with_flags(["A"])).validate()  # must not raise
+
+
+def test_validate_rejects_tail_garbage():
+    raw = bytearray(make_save_with_flags(["A"]))
+    s = SgdFile(bytes(raw))
+    raw[s.payload_end + 100] = 0xFF          # non-zero past the declared end
+    with pytest.raises(SgdError, match="padding"):
+        SgdFile(bytes(raw)).validate()
+
+
+def test_validate_rejects_absurd_playtime():
+    raw = bytearray(make_save_with_flags(["A"]))
+    struct.pack_into("<f", raw, 0x69, 1e12)
+    with pytest.raises(SgdError, match="playtime"):
+        SgdFile(bytes(raw)).validate()

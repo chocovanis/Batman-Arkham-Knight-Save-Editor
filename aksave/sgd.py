@@ -77,6 +77,37 @@ class SgdFile:
             self.read_flags()
         return self._array_end
 
+    @property
+    def payload_end(self) -> int:
+        return 57 + sum(self.u32(o) for o in SUM_OFFS)
+
+    def validate(self) -> None:
+        """Refuse to work with a file whose structure we cannot confirm.
+
+        Each check corresponds to an assumption the write path relies on.
+        A file failing any of them is one we would be guessing about.
+        """
+        if self.version != 6:
+            raise SgdError(f"unsupported save version {self.version}")
+
+        end = self.payload_end
+        if not 0 < end <= len(self.body):
+            raise SgdError(f"declared payload end {end} outside file")
+
+        # The tail must be zero padding; that is the space appends consume.
+        # Ten bytes of slack: one corpus file legitimately ends in zeros.
+        if any(self.body[end:]):
+            raise SgdError("non-zero data found in tail padding")
+
+        pt = self.playtime_seconds
+        if not 0 <= pt < MAX_PLAYTIME:
+            raise SgdError(f"implausible playtime {pt}; offsets may be wrong")
+
+        if bytes(self.body[self.array_offset - 11:self.array_offset]) != ARRAY_PREFIX:
+            raise SgdError("flag array prefix not found where expected")
+
+        self.read_flags()  # raises if the array does not parse cleanly
+
     def to_bytes(self) -> bytes:
         return bytes(self.prefix) + bytes(self.body)
 
