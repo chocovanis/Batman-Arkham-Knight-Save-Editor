@@ -1,0 +1,3154 @@
+{
+ "items": [
+  {
+   "flag": "PickedUp_CityX_Bomb_14",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Bomb",
+   "type_name": "Bomb Rioter",
+   "index": 14,
+   "display": "Bomb Rioter 1 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Bomb_15",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Bomb",
+   "type_name": "Bomb Rioter",
+   "index": 15,
+   "display": "Bomb Rioter 2 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Bomb_16",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Bomb",
+   "type_name": "Bomb Rioter",
+   "index": 16,
+   "display": "Bomb Rioter 3 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_1",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 1,
+   "display": "Breakable 1 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_10",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 10,
+   "display": "Breakable 10 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_11",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 11,
+   "display": "Breakable 11 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_12",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 12,
+   "display": "Breakable 12 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_13",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 13,
+   "display": "Breakable 13 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_14",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 14,
+   "display": "Breakable 14 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_15",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 15,
+   "display": "Breakable 15 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_2",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 2,
+   "display": "Breakable 2 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_3",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 3,
+   "display": "Breakable 3 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_4",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 4,
+   "display": "Breakable 4 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_5",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 5,
+   "display": "Breakable 5 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_6",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 6,
+   "display": "Breakable 6 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_7",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 7,
+   "display": "Breakable 7 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_8",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 8,
+   "display": "Breakable 8 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_MilitiaShield_9",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 9,
+   "display": "Breakable 9 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_1",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 1,
+   "display": "Riddler Trophy 1 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_10",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 10,
+   "display": "Riddler Trophy 10 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_11",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 11,
+   "display": "Riddler Trophy 11 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_12",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 12,
+   "display": "Riddler Trophy 12 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_13",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 13,
+   "display": "Riddler Trophy 13 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_17",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 17,
+   "display": "Riddler Trophy 14 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_18",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 18,
+   "display": "Riddler Trophy 15 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_19",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 19,
+   "display": "Riddler Trophy 16 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_2",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 2,
+   "display": "Riddler Trophy 2 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_20",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 20,
+   "display": "Riddler Trophy 17 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_21",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 21,
+   "display": "Riddler Trophy 18 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_22",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 22,
+   "display": "Riddler Trophy 19 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_23",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 23,
+   "display": "Riddler Trophy 20 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_24",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 24,
+   "display": "Riddler Trophy 21 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_25",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 25,
+   "display": "Riddler Trophy 22 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_26",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 26,
+   "display": "Riddler Trophy 23 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_27",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 27,
+   "display": "Riddler Trophy 24 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_28",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 28,
+   "display": "Riddler Trophy 25 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_29",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 29,
+   "display": "Riddler Trophy 26 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_3",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 3,
+   "display": "Riddler Trophy 3 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_30",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 30,
+   "display": "Riddler Trophy 27 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_31",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 31,
+   "display": "Riddler Trophy 28 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_32",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 32,
+   "display": "Riddler Trophy 29 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_33",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 33,
+   "display": "Riddler Trophy 30 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_34",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 34,
+   "display": "Riddler Trophy 31 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_35",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 35,
+   "display": "Riddler Trophy 32 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_36",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 36,
+   "display": "Riddler Trophy 33 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_37",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 37,
+   "display": "Riddler Trophy 34 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_38",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 38,
+   "display": "Riddler Trophy 35 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_39",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 39,
+   "display": "Riddler Trophy 36 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_4",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 4,
+   "display": "Riddler Trophy 4 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_40",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 40,
+   "display": "Riddler Trophy 37 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_41",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 41,
+   "display": "Riddler Trophy 38 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_5",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 5,
+   "display": "Riddler Trophy 5 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_6",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 6,
+   "display": "Riddler Trophy 6 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_7",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 7,
+   "display": "Riddler Trophy 7 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_8",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 8,
+   "display": "Riddler Trophy 8 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Pickup_9",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 9,
+   "display": "Riddler Trophy 9 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_17",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 17,
+   "display": "Riddle 3 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_18",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 18,
+   "display": "Riddle 4 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_2",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 2,
+   "display": "Riddle 1 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_26",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 26,
+   "display": "Riddle 5 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_31",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 31,
+   "display": "Riddle 6 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_32",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 32,
+   "display": "Riddle 7 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_33",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 33,
+   "display": "Riddle 8 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_38",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 38,
+   "display": "Riddle 9 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_39",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 39,
+   "display": "Riddle 10 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityX_Riddler_8",
+   "region": "CityX",
+   "region_name": "Miagani Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 8,
+   "display": "Riddle 2 - Miagani Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_1",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 1,
+   "display": "Breakable 1 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_10",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 10,
+   "display": "Breakable 10 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_11",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 11,
+   "display": "Breakable 11 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_12",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 12,
+   "display": "Breakable 12 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_13",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 13,
+   "display": "Breakable 13 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_14",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 14,
+   "display": "Breakable 14 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_15",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 15,
+   "display": "Breakable 15 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_2",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 2,
+   "display": "Breakable 2 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_3",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 3,
+   "display": "Breakable 3 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_4",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 4,
+   "display": "Breakable 4 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_5",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 5,
+   "display": "Breakable 5 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_6",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 6,
+   "display": "Breakable 6 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_7",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 7,
+   "display": "Breakable 7 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_8",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 8,
+   "display": "Breakable 8 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_MilitiaShield_9",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 9,
+   "display": "Breakable 9 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_1",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 1,
+   "display": "Riddler Trophy 1 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_10",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 10,
+   "display": "Riddler Trophy 10 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_11",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 11,
+   "display": "Riddler Trophy 11 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_12",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 12,
+   "display": "Riddler Trophy 12 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_13",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 13,
+   "display": "Riddler Trophy 13 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_14",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 14,
+   "display": "Riddler Trophy 14 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_15",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 15,
+   "display": "Riddler Trophy 15 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_16",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 16,
+   "display": "Riddler Trophy 16 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_17",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 17,
+   "display": "Riddler Trophy 17 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_18",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 18,
+   "display": "Riddler Trophy 18 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_19",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 19,
+   "display": "Riddler Trophy 19 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_2",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 2,
+   "display": "Riddler Trophy 2 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_20",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 20,
+   "display": "Riddler Trophy 20 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_21",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 21,
+   "display": "Riddler Trophy 21 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_22",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 22,
+   "display": "Riddler Trophy 22 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_23",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 23,
+   "display": "Riddler Trophy 23 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_24",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 24,
+   "display": "Riddler Trophy 24 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_25",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 25,
+   "display": "Riddler Trophy 25 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_26",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 26,
+   "display": "Riddler Trophy 26 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_27",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 27,
+   "display": "Riddler Trophy 27 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_28",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 28,
+   "display": "Riddler Trophy 28 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_29",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 29,
+   "display": "Riddler Trophy 29 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_3",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 3,
+   "display": "Riddler Trophy 3 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_30",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 30,
+   "display": "Riddler Trophy 30 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_31",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 31,
+   "display": "Riddler Trophy 31 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_32",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 32,
+   "display": "Riddler Trophy 32 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_33",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 33,
+   "display": "Riddler Trophy 33 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_34",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 34,
+   "display": "Riddler Trophy 34 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_35",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 35,
+   "display": "Riddler Trophy 35 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_36",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 36,
+   "display": "Riddler Trophy 36 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_37",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 37,
+   "display": "Riddler Trophy 37 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_38",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 38,
+   "display": "Riddler Trophy 38 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_39",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 39,
+   "display": "Riddler Trophy 39 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_4",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 4,
+   "display": "Riddler Trophy 4 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_40",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 40,
+   "display": "Riddler Trophy 40 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_41",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 41,
+   "display": "Riddler Trophy 41 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_5",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 5,
+   "display": "Riddler Trophy 5 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_6",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 6,
+   "display": "Riddler Trophy 6 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_7",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 7,
+   "display": "Riddler Trophy 7 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_8",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 8,
+   "display": "Riddler Trophy 8 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Pickup_9",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 9,
+   "display": "Riddler Trophy 9 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_1",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 1,
+   "display": "Riddle 1 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_14",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 14,
+   "display": "Riddle 5 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_23",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 23,
+   "display": "Riddle 6 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_29",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 29,
+   "display": "Riddle 7 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_3",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 3,
+   "display": "Riddle 2 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_30",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 30,
+   "display": "Riddle 8 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_36",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 36,
+   "display": "Riddle 9 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_4",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 4,
+   "display": "Riddle 3 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_40",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 40,
+   "display": "Riddle 10 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityY_Riddler_6",
+   "region": "CityY",
+   "region_name": "Founders' Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 6,
+   "display": "Riddle 4 - Founders' Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Bomb_16",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Bomb",
+   "type_name": "Bomb Rioter",
+   "index": 16,
+   "display": "Bomb Rioter 1 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Bomb_17",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Bomb",
+   "type_name": "Bomb Rioter",
+   "index": 17,
+   "display": "Bomb Rioter 2 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Bomb_18",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Bomb",
+   "type_name": "Bomb Rioter",
+   "index": 18,
+   "display": "Bomb Rioter 3 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_1",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 1,
+   "display": "Breakable 1 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_10",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 10,
+   "display": "Breakable 10 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_11",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 11,
+   "display": "Breakable 11 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_12",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 12,
+   "display": "Breakable 12 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_13",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 13,
+   "display": "Breakable 13 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_14",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 14,
+   "display": "Breakable 14 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_15",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 15,
+   "display": "Breakable 15 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_2",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 2,
+   "display": "Breakable 2 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_3",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 3,
+   "display": "Breakable 3 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_4",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 4,
+   "display": "Breakable 4 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_5",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 5,
+   "display": "Breakable 5 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_6",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 6,
+   "display": "Breakable 6 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_7",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 7,
+   "display": "Breakable 7 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_8",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 8,
+   "display": "Breakable 8 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_MilitiaShield_9",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "MilitiaShield",
+   "type_name": "Breakable",
+   "index": 9,
+   "display": "Breakable 9 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_1",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 1,
+   "display": "Riddler Trophy 1 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_10",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 10,
+   "display": "Riddler Trophy 10 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_11",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 11,
+   "display": "Riddler Trophy 11 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_12",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 12,
+   "display": "Riddler Trophy 12 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_13",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 13,
+   "display": "Riddler Trophy 13 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_14",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 14,
+   "display": "Riddler Trophy 14 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_15",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 15,
+   "display": "Riddler Trophy 15 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_19",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 19,
+   "display": "Riddler Trophy 16 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_2",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 2,
+   "display": "Riddler Trophy 2 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_20",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 20,
+   "display": "Riddler Trophy 17 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_21",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 21,
+   "display": "Riddler Trophy 18 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_22",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 22,
+   "display": "Riddler Trophy 19 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_23",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 23,
+   "display": "Riddler Trophy 20 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_24",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 24,
+   "display": "Riddler Trophy 21 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_25",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 25,
+   "display": "Riddler Trophy 22 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_26",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 26,
+   "display": "Riddler Trophy 23 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_27",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 27,
+   "display": "Riddler Trophy 24 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_28",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 28,
+   "display": "Riddler Trophy 25 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_29",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 29,
+   "display": "Riddler Trophy 26 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_3",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 3,
+   "display": "Riddler Trophy 3 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_30",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 30,
+   "display": "Riddler Trophy 27 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_31",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 31,
+   "display": "Riddler Trophy 28 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_32",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 32,
+   "display": "Riddler Trophy 29 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_33",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 33,
+   "display": "Riddler Trophy 30 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_34",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 34,
+   "display": "Riddler Trophy 31 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_35",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 35,
+   "display": "Riddler Trophy 32 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_36",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 36,
+   "display": "Riddler Trophy 33 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_37",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 37,
+   "display": "Riddler Trophy 34 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_38",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 38,
+   "display": "Riddler Trophy 35 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_39",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 39,
+   "display": "Riddler Trophy 36 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_4",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 4,
+   "display": "Riddler Trophy 4 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_40",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 40,
+   "display": "Riddler Trophy 37 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_5",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 5,
+   "display": "Riddler Trophy 5 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_6",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 6,
+   "display": "Riddler Trophy 6 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_7",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 7,
+   "display": "Riddler Trophy 7 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_8",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 8,
+   "display": "Riddler Trophy 8 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Pickup_9",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 9,
+   "display": "Riddler Trophy 9 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_10",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 10,
+   "display": "Riddle 4 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_12",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 12,
+   "display": "Riddle 5 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_15",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 15,
+   "display": "Riddle 6 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_19",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 19,
+   "display": "Riddle 7 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_21",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 21,
+   "display": "Riddle 8 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_22",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 22,
+   "display": "Riddle 9 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_25",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 25,
+   "display": "Riddle 10 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_28",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 28,
+   "display": "Riddle 11 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_5",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 5,
+   "display": "Riddle 1 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_7",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 7,
+   "display": "Riddle 2 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_CityZ_Riddler_9",
+   "region": "CityZ",
+   "region_name": "Bleake Island",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 9,
+   "display": "Riddle 3 - Bleake Island",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_1",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 1,
+   "display": "Breakable 1 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_10",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 10,
+   "display": "Breakable 10 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_11",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 11,
+   "display": "Breakable 11 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_12",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 12,
+   "display": "Breakable 12 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_13",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 13,
+   "display": "Breakable 13 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_14",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 14,
+   "display": "Breakable 14 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_15",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 15,
+   "display": "Breakable 15 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_2",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 2,
+   "display": "Breakable 2 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_3",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 3,
+   "display": "Breakable 3 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_4",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 4,
+   "display": "Breakable 4 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_5",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 5,
+   "display": "Breakable 5 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_6",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 6,
+   "display": "Breakable 6 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_7",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 7,
+   "display": "Breakable 7 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_8",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 8,
+   "display": "Breakable 8 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_JackInTheBox_9",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "JackInTheBox",
+   "type_name": "Breakable",
+   "index": 9,
+   "display": "Breakable 9 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_26",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 26,
+   "display": "Riddler Trophy 1 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_27",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 27,
+   "display": "Riddler Trophy 2 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_28",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 28,
+   "display": "Riddler Trophy 3 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_30",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 30,
+   "display": "Riddler Trophy 4 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_31",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 31,
+   "display": "Riddler Trophy 5 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_32",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 32,
+   "display": "Riddler Trophy 6 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_33",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 33,
+   "display": "Riddler Trophy 7 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_34",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 34,
+   "display": "Riddler Trophy 8 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_35",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 35,
+   "display": "Riddler Trophy 9 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_36",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 36,
+   "display": "Riddler Trophy 10 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_37",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 37,
+   "display": "Riddler Trophy 11 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_39",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 39,
+   "display": "Riddler Trophy 12 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_40",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 40,
+   "display": "Riddler Trophy 13 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_41",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 41,
+   "display": "Riddler Trophy 14 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_42",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 42,
+   "display": "Riddler Trophy 15 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_44",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 44,
+   "display": "Riddler Trophy 16 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_45",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 45,
+   "display": "Riddler Trophy 17 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_46",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 46,
+   "display": "Riddler Trophy 18 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_47",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 47,
+   "display": "Riddler Trophy 19 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_48",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 48,
+   "display": "Riddler Trophy 20 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Pickup_50",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 50,
+   "display": "Riddler Trophy 21 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Riddler_13",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 13,
+   "display": "Riddle 1 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Riddler_16",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 16,
+   "display": "Riddle 2 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Film_Riddler_37",
+   "region": "Film",
+   "region_name": "Panessa Studios",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 37,
+   "display": "Riddle 3 - Panessa Studios",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_1",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 1,
+   "display": "Breakable 1 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_10",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 10,
+   "display": "Breakable 10 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_11",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 11,
+   "display": "Breakable 11 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_12",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 12,
+   "display": "Breakable 12 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_13",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 13,
+   "display": "Breakable 13 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_14",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 14,
+   "display": "Breakable 14 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_15",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 15,
+   "display": "Breakable 15 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_2",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 2,
+   "display": "Breakable 2 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_3",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 3,
+   "display": "Breakable 3 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_4",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 4,
+   "display": "Breakable 4 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_5",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 5,
+   "display": "Breakable 5 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_6",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 6,
+   "display": "Breakable 6 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_7",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 7,
+   "display": "Breakable 7 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_8",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 8,
+   "display": "Breakable 8 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_MiniDrone_9",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "MiniDrone",
+   "type_name": "Breakable",
+   "index": 9,
+   "display": "Breakable 9 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_1",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 1,
+   "display": "Riddler Trophy 1 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_10",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 10,
+   "display": "Riddler Trophy 10 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_11",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 11,
+   "display": "Riddler Trophy 11 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_12",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 12,
+   "display": "Riddler Trophy 12 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_13",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 13,
+   "display": "Riddler Trophy 13 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_14",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 14,
+   "display": "Riddler Trophy 14 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_15",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 15,
+   "display": "Riddler Trophy 15 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_16",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 16,
+   "display": "Riddler Trophy 16 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_17",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 17,
+   "display": "Riddler Trophy 17 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_18",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 18,
+   "display": "Riddler Trophy 18 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_19",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 19,
+   "display": "Riddler Trophy 19 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_2",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 2,
+   "display": "Riddler Trophy 2 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_20",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 20,
+   "display": "Riddler Trophy 20 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_21",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 21,
+   "display": "Riddler Trophy 21 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_3",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 3,
+   "display": "Riddler Trophy 3 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_4",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 4,
+   "display": "Riddler Trophy 4 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_5",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 5,
+   "display": "Riddler Trophy 5 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_6",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 6,
+   "display": "Riddler Trophy 6 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_7",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 7,
+   "display": "Riddler Trophy 7 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_8",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 8,
+   "display": "Riddler Trophy 8 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Pickup_9",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 9,
+   "display": "Riddler Trophy 9 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Riddler_20",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 20,
+   "display": "Riddle 1 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Riddler_24",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 24,
+   "display": "Riddle 2 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_HideOut_Riddler_34",
+   "region": "HideOut",
+   "region_name": "Arkham Knight HQ",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 34,
+   "display": "Riddle 3 - Arkham Knight HQ",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_1",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 1,
+   "display": "Breakable 1 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_10",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 10,
+   "display": "Breakable 10 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_11",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 11,
+   "display": "Breakable 11 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_12",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 12,
+   "display": "Breakable 12 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_13",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 13,
+   "display": "Breakable 13 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_14",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 14,
+   "display": "Breakable 14 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_15",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 15,
+   "display": "Breakable 15 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_2",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 2,
+   "display": "Breakable 2 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_3",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 3,
+   "display": "Breakable 3 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_4",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 4,
+   "display": "Breakable 4 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_5",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 5,
+   "display": "Breakable 5 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_6",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 6,
+   "display": "Breakable 6 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_7",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 7,
+   "display": "Breakable 7 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_8",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 8,
+   "display": "Breakable 8 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_InsectCrate_9",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "InsectCrate",
+   "type_name": "Breakable",
+   "index": 9,
+   "display": "Breakable 9 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_1",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 1,
+   "display": "Riddler Trophy 1 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_10",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 10,
+   "display": "Riddler Trophy 10 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_13",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 13,
+   "display": "Riddler Trophy 11 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_14",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 14,
+   "display": "Riddler Trophy 12 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_16",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 16,
+   "display": "Riddler Trophy 13 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_17",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 17,
+   "display": "Riddler Trophy 14 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_18",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 18,
+   "display": "Riddler Trophy 15 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_19",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 19,
+   "display": "Riddler Trophy 16 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_2",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 2,
+   "display": "Riddler Trophy 2 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_20",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 20,
+   "display": "Riddler Trophy 17 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_22",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 22,
+   "display": "Riddler Trophy 18 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_23",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 23,
+   "display": "Riddler Trophy 19 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_24",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 24,
+   "display": "Riddler Trophy 20 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_25",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 25,
+   "display": "Riddler Trophy 21 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_3",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 3,
+   "display": "Riddler Trophy 3 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_4",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 4,
+   "display": "Riddler Trophy 4 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_5",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 5,
+   "display": "Riddler Trophy 5 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_6",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 6,
+   "display": "Riddler Trophy 6 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_7",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 7,
+   "display": "Riddler Trophy 7 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_8",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 8,
+   "display": "Riddler Trophy 8 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Pickup_9",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Pickup",
+   "type_name": "Riddler Trophy",
+   "index": 9,
+   "display": "Riddler Trophy 9 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Riddler_11",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 11,
+   "display": "Riddle 1 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Riddler_27",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 27,
+   "display": "Riddle 2 - Stagg Airships",
+   "named": false
+  },
+  {
+   "flag": "PickedUp_Stagg_Riddler_35",
+   "region": "Stagg",
+   "region_name": "Stagg Airships",
+   "type": "Riddler",
+   "type_name": "Riddle",
+   "index": 35,
+   "display": "Riddle 3 - Stagg Airships",
+   "named": false
+  }
+ ]
+}
