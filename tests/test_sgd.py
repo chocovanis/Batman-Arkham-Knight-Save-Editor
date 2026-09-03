@@ -99,3 +99,37 @@ def test_validate_rejects_absurd_playtime():
     struct.pack_into("<f", raw, 0x69, 1e12)
     with pytest.raises(SgdError, match="playtime"):
         SgdFile(bytes(raw)).validate()
+
+
+def test_append_adds_flags_and_preserves_size():
+    original = make_save_with_flags(["A", "B"])
+    s = SgdFile(original)
+    before_len = s.u32(0x10)
+    s.append_flags(["PickedUp_CityZ_Pickup_1"])
+
+    assert s.read_flags() == ["A", "B", "PickedUp_CityZ_Pickup_1"]
+    assert len(s.to_bytes()) == len(original)          # size invariant
+    # 23 chars + NUL + 4-byte prefix = 28
+    assert s.u32(0x10) == before_len + 28
+    s.validate()
+
+
+def test_append_is_exact_byte_arithmetic():
+    """The game grew section 2 by exactly 58 for these two names (spec 4.1)."""
+    s = SgdFile(make_save_with_flags(["A"]))
+    before = s.u32(0x10)
+    s.append_flags(["PickedUp_HideOut_Pickup_15", "All_Trophies_Collected"])
+    assert s.u32(0x10) - before == 58
+
+
+def test_append_rejects_duplicates():
+    s = SgdFile(make_save_with_flags(["A"]))
+    with pytest.raises(SgdError, match="already present"):
+        s.append_flags(["A"])
+
+
+def test_append_refuses_when_padding_insufficient():
+    s = SgdFile(make_save_with_flags(["A"]))
+    s.set_u32(0x18, STEAM_SIZE - 200)   # consume nearly all the padding
+    with pytest.raises(SgdError, match="padding"):
+        s.append_flags(["X" * 100])

@@ -108,6 +108,36 @@ class SgdFile:
 
         self.read_flags()  # raises if the array does not parse cleanly
 
+    def append_flags(self, names: list[str]) -> int:
+        """Append flag names to the global array. Returns bytes inserted.
+
+        Existing entries are never moved or rewritten. The array is a set and
+        its order carries no meaning, so appending is the minimal-disturbance
+        edit: only the count, one section length, and the tail move.
+        """
+        existing = self.read_flags()
+        dupes = [n for n in names if n in existing]
+        if dupes:
+            raise SgdError(f"already present: {dupes[:3]}")
+
+        blob = b"".join(encode_fstring(n) for n in names)
+        insert_at = self.array_end
+        grow = len(blob)
+
+        # The tail padding is what absorbs the shift.
+        if self.payload_end + grow > len(self.body):
+            raise SgdError("not enough tail padding to append")
+
+        tail = self.body[insert_at:len(self.body) - grow]
+        self.body[insert_at:insert_at + grow] = blob
+        self.body[insert_at + grow:] = tail
+
+        self.set_u32(self.array_offset, len(existing) + len(names))
+        self.set_u32(SECTION2_LEN_OFF, self.u32(SECTION2_LEN_OFF) + grow)
+
+        del self._array_end          # force a re-parse
+        return grow
+
     def to_bytes(self) -> bytes:
         return bytes(self.prefix) + bytes(self.body)
 
