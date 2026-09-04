@@ -61,19 +61,100 @@ def test_flag_array_round_trip():
     assert s.read_flags() == names
 
 
-def make_save_with_flags(names):
-    """Place a counted flag array at the location the real format uses."""
-    sec1_len = 4096
+def make_save_with_flags(names, regions=True, second_store=False):
+    """Build a save carrying every structure the writer touches.
+
+    A minimal file with only the primary flag array is not good enough to test
+    against any more: the whole point of the current writer is that it also
+    edits the section-3 store, the section-2 progress cache, the per-region
+    records and the section-1 counter string. So the fixture builds all of
+    them, consistent with `names`, exactly as a real save has them.
+
+    `regions=False` omits the per-region record block, reproducing the very
+    early saves in the corpus that genuinely do not have one yet.
+    `second_store=True` adds the second complete world state that 12 corpus
+    saves — including all of the user's own — carry in section 0x20.
+    """
+    from aksave.catalog import Catalog, challenges_from_flags, trophies_by_region
+    from aksave.sgd import (CACHE_REGIONS, CHALLENGE_DONE, RIDDLE_SLOTS,
+                            RIDDLE_SOLVED)
+
+    blob = b"".join(encode_fstring(n) for n in names)
+    by_region = trophies_by_region(names)
+    trophies = [by_region.get(r, 0) for r in CACHE_REGIONS]
+
+    # --- section 1: the four display counters -------------------------
+    sec1 = bytearray(b"\x00" * 64)
+    # Slot 1 is the Riddler counter; the other three track unrelated things.
+    counters = ["0/243", f"{challenges_from_flags(names)}/243", "0/286", "0/78"]
+    sec1 += struct.pack("<I", 4)
+    for text in counters:
+        sec1 += encode_fstring(text)
+    sec1 += b"\x00" * 64
+
+    # --- section 2: flag array, per-region records, progress cache -----
+    sec2 = bytearray(ARRAY_PREFIX) + struct.pack("<I", len(names)) + blob
+    sec2 += b"\x00" * 16
+
+    # The flat riddle-solved array, indexed by the riddle's global 1..40 number.
+    solved = [0] * RIDDLE_SLOTS
+    for name in names:
+        parts = name.split("_")
+        if name.startswith("PickedUp_") and parts[2] == "Riddler":
+            solved[int(parts[3])] = RIDDLE_SOLVED
+    sec2 += struct.pack("<I", RIDDLE_SLOTS)
+    sec2 += struct.pack(f"<{RIDDLE_SLOTS}I", *solved)
+    sec2 += b"\x00" * 16
+
+    if regions:
+        sec2 += struct.pack("<I", 6) + b"\x00"    # count, then one filler byte
+        for region_id in range(1, 7):
+            record = bytearray(16)
+            record[0] = region_id
+            record[2] = 9 if region_id <= 3 else 8
+            record[7] = trophies[region_id - 1]
+            sec2 += record
+
+        # The 18 per-challenge status records, one per Riddler puzzle, holding
+        # one byte per piece in the manifest's order. A region the player has
+        # never entered genuinely has no record, which is what regions=False
+        # models.
+        collected = {f for f in names if f.startswith("PickedUp_")}
+        for puzzle in Catalog.load().puzzles:
+            region_id = CACHE_REGIONS.index(puzzle.region) + 1
+            status = bytes(CHALLENGE_DONE if done else 3
+                           for done in puzzle.satisfied(collected))
+            sec2 += bytes([0, puzzle.id, 0, region_id])
+            sec2 += struct.pack("<I", len(status)) + status
+    sec2 += b"\x00" * 16
+    anchor = len(sec2)
+    for count in (9, 9, 9, 10):
+        sec2 += struct.pack("<I", count) + struct.pack(f"<{count}I", *([0] * count))
+    sec2 += b"\x00" * 512
+    struct.pack_into("<9I", sec2, anchor + 4, *(trophies + [0, 0, 0]))
+    struct.pack_into("<I", sec2, anchor + 376, sum(trophies))
+
+    # --- sections 3 and, optionally, 5: the world-state stores ---------
+    def store(keys):
+        out = bytearray(struct.pack("<I", len(keys)))
+        out += b"".join(encode_fstring(k) for k in keys)
+        out += struct.pack("<I", len(keys)) + struct.pack("<i", 1) * len(keys)
+        return out + b"\x00" * 64
+
+    sections = [(0x0C, sec1), (0x10, sec2), (0x18, store(list(names)))]
+    if second_store:
+        # Deliberately a different key order: the two stores in a real save
+        # agree on content, not on order.
+        sections.append((0x20, store(list(reversed(names)))))
+
     body = bytearray(STEAM_SIZE)
     struct.pack_into("<I", body, 0x00, 6)
-    struct.pack_into("<I", body, 0x0C, sec1_len)
     struct.pack_into("<f", body, 0x69, 3600.0)
-    arr = 57 + sec1_len + 11
-    body[arr - 11:arr] = ARRAY_PREFIX
-    struct.pack_into("<I", body, arr, len(names))
-    blob = b"".join(encode_fstring(n) for n in names)
-    body[arr + 4:arr + 4 + len(blob)] = blob
-    struct.pack_into("<I", body, 0x10, 11 + 4 + len(blob))
+    pos = 57
+    for len_off, section in sections:
+        struct.pack_into("<I", body, len_off, len(section))
+        body[pos:pos + len(section)] = section
+        pos += len(section)
     return bytes(body)
 
 
@@ -133,3 +214,85 @@ def test_append_refuses_when_padding_insufficient():
     s.set_u32(0x18, STEAM_SIZE - 200)   # consume nearly all the padding
     with pytest.raises(SgdError, match="padding"):
         s.append_flags(["X" * 100])
+
+
+# --- the caches the game actually reads ------------------------------------
+
+
+def test_locates_the_world_state_store():
+    names = ["PickedUp_CityZ_Pickup_1", "Alpha"]
+    s = SgdFile(make_save_with_flags(names))
+    stores = s.read_stores()
+    assert len(stores) == 1
+    assert stores[0].keys == names
+    assert stores[0].count == 2
+
+
+def test_locates_the_challenge_records():
+    flags = [f"PickedUp_CityZ_Pickup_{i}" for i in (2, 3, 9, 11)]
+    s = SgdFile(make_save_with_flags(flags))
+    records = s.read_challenge_records()
+    assert len(records) == 18
+    assert sum(len(values) for _, _, values in records) == 243
+    done = sum(1 for _, _, values in records for v in values if v >= 4)
+    assert done == 4                     # four trophies, four challenges
+
+
+def test_locates_the_display_counters():
+    s = SgdFile(make_save_with_flags(["PickedUp_CityZ_Pickup_1"]))
+    counters = s.read_counters()
+    assert len(counters.values) == 4
+    assert counters.values[counters.RIDDLER] == "1/243"
+
+
+def test_locates_the_progress_cache():
+    flags = [f"PickedUp_CityX_Pickup_{i}" for i in range(3)]
+    s = SgdFile(make_save_with_flags(flags))
+    trophies, total = s.read_trophy_cache()
+    assert trophies == [3, 0, 0, 0, 0, 0]      # CACHE_REGIONS starts with CityX
+    assert total == 3
+
+
+def test_locates_the_per_region_records():
+    flags = [f"PickedUp_HideOut_Pickup_{i}" for i in range(4)]
+    s = SgdFile(make_save_with_flags(flags))
+    records = s.read_region_records()
+    assert [region for _, region in records] == [1, 2, 3, 4, 5, 6]
+    assert s.body[s.region_count_offset(records[5][0])] == 4    # HideOut is 6
+
+
+def test_validate_writable_refuses_a_save_with_no_region_records():
+    s = SgdFile(make_save_with_flags(["PickedUp_CityZ_Pickup_1"], regions=False))
+    s.validate()                                    # readable
+    with pytest.raises(SgdError, match="per-region"):
+        s.validate_writable()                       # but not editable
+
+
+def test_apply_charges_a_growing_fstring_to_its_own_section():
+    """The counter string lives in section 1, not the section the array is in.
+
+    A digit-count change there is a real insertion, so it must be charged to
+    u32[0x0C]; charging it to the array's section would corrupt the layout.
+    """
+    s = SgdFile(make_save_with_flags(["PickedUp_CityZ_Pickup_1"]))
+    before = (s.u32(0x0C), s.u32(0x10))
+    counters = s.read_counters()
+    s.apply([("fstring", counters.offsets[counters.RIDDLER], "100/243")])
+    assert s.u32(0x0C) == before[0] + 2             # "1/243" -> "100/243"
+    assert s.u32(0x10) == before[1]
+    assert s.read_counters().values[1] == "100/243"
+    s.validate()
+
+
+def test_apply_handles_a_shrinking_fstring():
+    """Unreachable from collect(), which only ever adds, but apply() owns the
+    arithmetic in both directions and a one-sided implementation would hide a
+    sign error until something else needed it."""
+    s = SgdFile(make_save_with_flags([f"PickedUp_CityZ_Pickup_{i}" for i in range(100)]))
+    assert s.read_counters().values[1] == "100/243"
+    before = s.u32(0x0C)
+    counters = s.read_counters()
+    s.apply([("fstring", counters.offsets[counters.RIDDLER], "1/243")])
+    assert s.u32(0x0C) == before - 2
+    assert s.read_counters().values[1] == "1/243"
+    s.validate()

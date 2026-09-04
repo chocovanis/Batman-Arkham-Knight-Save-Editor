@@ -40,3 +40,24 @@ def test_rejects_unknown_flag():
     import pytest
     with pytest.raises(KeyError):
         CAT.item("PickedUp_CityZ_Pickup_999")
+
+
+def test_breakables_are_credited_per_region_not_globally():
+    """The corpus contains a save where the two rules disagree.
+
+    `Riddler 183/BAK1Save2x2.sgd` holds part-finished breakable groups in
+    several regions at once; the game's own counter says 166, and summing all
+    breakables before dividing gives 167. Getting this wrong now puts a wrong
+    number on the HUD, because the editor writes that counter string.
+    """
+    shields = [i.flag for i in CAT.items if i.type == "MilitiaShield"]
+    a = [f for f in shields if f.split("_")[1] == "CityX"][:4]
+    b = [f for f in shields if f.split("_")[1] == "CityY"][:4]
+    assert challenges_from_flags(a + b) == 0        # global rule would say 1
+
+
+def test_trophies_by_region_counts_only_pickups():
+    from aksave.catalog import trophies_by_region
+    flags = [i.flag for i in CAT.items
+             if i.region == "HideOut" and i.type in ("Pickup", "MiniDrone")]
+    assert trophies_by_region(flags) == {"HideOut": 21}

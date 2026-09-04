@@ -62,21 +62,32 @@ def slot_files(path: Path) -> list[Path]:
 
 
 def check_slot_complete(path: Path) -> list[Path]:
-    """The game keeps three rotations per slot and may load any of them.
+    """Confirm the slot has a sane set of rotation files, and list them.
 
-    An incomplete slot means we cannot know which file the game will read, so
-    refuse rather than edit one and hope.
+    This used to demand all three of x0/x1/x2 on the grounds that otherwise
+    "we cannot know which file the game will read". That reasoning is
+    backwards — with a single rotation we know exactly which file it reads —
+    and it refused a real save: the user's own slot 1 was created by the game
+    with only x1. The hazard actually worth flagging is editing a rotation that
+    is not the newest, and the GUI's "not the newest rotation" warning already
+    covers that.
+
+    What is still refused: a slot with no rotation files, and any rotation
+    number outside 0/1/2, which no folder in the corpus has and which would
+    mean we are looking at something other than an Arkham Knight save slot.
+
+    (The name is kept because the GUI imports it; it now means "usable slot".)
     """
     found = slot_rotations(path)
-    missing = [r for r in ROTATIONS if r not in found]
-    if missing:
-        have = len(found)
+    if not found:
+        raise RailError(f"no rotation files found for {Path(path).name}")
+    unexpected = sorted(r for r in found if r not in ROTATIONS)
+    if unexpected:
         raise RailError(
-            f"slot is missing rotation file(s) "
-            f"{', '.join('x' + str(r) for r in missing)}; expected all three of "
-            f"BAK1Save<slot>x0/x1/x2.sgd and found {have}. "
-            f"Refusing to edit a partial slot.")
-    return [found[r] for r in ROTATIONS]
+            f"slot has unexpected rotation number(s) "
+            f"{', '.join('x' + str(r) for r in unexpected)}; the game only ever "
+            f"writes x0, x1 and x2. Refusing to edit an unfamiliar slot.")
+    return [found[r] for r in sorted(found)]
 
 
 def game_is_running() -> bool:

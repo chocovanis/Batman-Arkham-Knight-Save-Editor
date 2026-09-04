@@ -3150,5 +3150,394 @@
    "display": "Riddle 3 - Stagg Airships",
    "named": false
   }
+ ],
+ "puzzles": [
+  {
+   "id": 30,
+   "region": "CityZ",
+   "pieces": [
+    "PickedUp_CityZ_Riddler_5",
+    "PickedUp_CityZ_Bomb_16",
+    "PickedUp_CityZ_Pickup_19",
+    "PickedUp_CityZ_Pickup_28",
+    {
+     "breakable": 5
+    },
+    "PickedUp_CityZ_Riddler_9",
+    "PickedUp_CityZ_Pickup_23",
+    "PickedUp_CityZ_Pickup_13",
+    "PickedUp_CityZ_Riddler_12",
+    "PickedUp_CityZ_Pickup_37",
+    "PickedUp_CityZ_Riddler_7",
+    "PickedUp_CityZ_Pickup_2",
+    "PickedUp_CityZ_Pickup_11",
+    "PickedUp_CityZ_Pickup_9",
+    "PickedUp_CityZ_Pickup_24",
+    "PickedUp_CityZ_Pickup_3",
+    "PickedUp_CityZ_Pickup_30",
+    "PickedUp_CityZ_Pickup_38"
+   ]
+  },
+  {
+   "id": 31,
+   "region": "CityZ",
+   "pieces": [
+    "PickedUp_CityZ_Pickup_12",
+    "PickedUp_CityZ_Pickup_10",
+    "PickedUp_CityZ_Riddler_15",
+    "PickedUp_CityZ_Pickup_39",
+    "PickedUp_CityZ_Riddler_19",
+    "PickedUp_CityZ_Pickup_25",
+    "PickedUp_CityZ_Pickup_21",
+    "PickedUp_CityZ_Riddler_21",
+    "PickedUp_CityZ_Pickup_29",
+    "PickedUp_CityZ_Bomb_17",
+    "PickedUp_CityZ_Pickup_33",
+    "PickedUp_CityZ_Pickup_1",
+    "PickedUp_CityZ_Riddler_10",
+    "PickedUp_CityZ_Pickup_8",
+    "PickedUp_CityZ_Pickup_35",
+    "PickedUp_CityZ_Pickup_40",
+    "PickedUp_CityZ_Pickup_5",
+    {
+     "breakable": 10
+    }
+   ]
+  },
+  {
+   "id": 32,
+   "region": "CityZ",
+   "pieces": [
+    "PickedUp_CityZ_Pickup_4",
+    "PickedUp_CityZ_Pickup_26",
+    "PickedUp_CityZ_Bomb_18",
+    "PickedUp_CityZ_Pickup_36",
+    "PickedUp_CityZ_Pickup_7",
+    "PickedUp_CityZ_Riddler_28",
+    "PickedUp_CityZ_Pickup_27",
+    "PickedUp_CityZ_Pickup_22",
+    "PickedUp_CityZ_Pickup_15",
+    {
+     "breakable": 15
+    },
+    "PickedUp_CityZ_Pickup_14",
+    "PickedUp_CityZ_Pickup_34",
+    "PickedUp_CityZ_Pickup_32",
+    "PickedUp_CityZ_Pickup_6",
+    "PickedUp_CityZ_Riddler_22",
+    "PickedUp_CityZ_Riddler_25",
+    "PickedUp_CityZ_Pickup_31",
+    "PickedUp_CityZ_Pickup_20"
+   ]
+  },
+  {
+   "id": 10,
+   "region": "CityX",
+   "pieces": [
+    "PickedUp_CityX_Riddler_8",
+    "PickedUp_CityX_Pickup_41",
+    "PickedUp_CityX_Pickup_30",
+    "PickedUp_CityX_Bomb_14",
+    "PickedUp_CityX_Riddler_17",
+    "PickedUp_CityX_Pickup_8",
+    "PickedUp_CityX_Pickup_9",
+    "PickedUp_CityX_Pickup_13",
+    "PickedUp_CityX_Pickup_25",
+    "PickedUp_CityX_Pickup_27",
+    "PickedUp_CityX_Pickup_2",
+    "PickedUp_CityX_Pickup_38",
+    "PickedUp_CityX_Pickup_40",
+    "PickedUp_CityX_Riddler_2",
+    "PickedUp_CityX_Pickup_4",
+    {
+     "breakable": 10
+    },
+    "PickedUp_CityX_Pickup_39",
+    "PickedUp_CityX_Pickup_22"
+   ]
+  },
+  {
+   "id": 11,
+   "region": "CityX",
+   "pieces": [
+    "PickedUp_CityX_Pickup_17",
+    "PickedUp_CityX_Pickup_1",
+    "PickedUp_CityX_Pickup_3",
+    "PickedUp_CityX_Pickup_21",
+    {
+     "breakable": 15
+    },
+    "PickedUp_CityX_Riddler_18",
+    "PickedUp_CityX_Pickup_35",
+    "PickedUp_CityX_Riddler_26",
+    "PickedUp_CityX_Pickup_26",
+    "PickedUp_CityX_Pickup_36",
+    "PickedUp_CityX_Bomb_15",
+    "PickedUp_CityX_Pickup_23",
+    "PickedUp_CityX_Pickup_11",
+    "PickedUp_CityX_Pickup_31",
+    "PickedUp_CityX_Pickup_6",
+    "PickedUp_CityX_Pickup_20",
+    "PickedUp_CityX_Riddler_31",
+    "PickedUp_CityX_Pickup_33"
+   ]
+  },
+  {
+   "id": 12,
+   "region": "CityX",
+   "pieces": [
+    "PickedUp_CityX_Pickup_18",
+    "PickedUp_CityX_Riddler_32",
+    "PickedUp_CityX_Pickup_5",
+    "PickedUp_CityX_Bomb_16",
+    "PickedUp_CityX_Pickup_12",
+    "PickedUp_CityX_Pickup_24",
+    "PickedUp_CityX_Pickup_28",
+    "PickedUp_CityX_Pickup_7",
+    {
+     "breakable": 5
+    },
+    "PickedUp_CityX_Pickup_19",
+    "PickedUp_CityX_Riddler_38",
+    "PickedUp_CityX_Pickup_34",
+    "PickedUp_CityX_Pickup_10",
+    "PickedUp_CityX_Pickup_37",
+    "PickedUp_CityX_Riddler_33",
+    "PickedUp_CityX_Riddler_39",
+    "PickedUp_CityX_Pickup_32",
+    "PickedUp_CityX_Pickup_29"
+   ]
+  },
+  {
+   "id": 20,
+   "region": "CityY",
+   "pieces": [
+    "PickedUp_CityY_Riddler_4",
+    "PickedUp_CityY_Pickup_13",
+    "PickedUp_CityY_Riddler_1",
+    "PickedUp_CityY_Pickup_24",
+    "PickedUp_CityY_Riddler_3",
+    "PickedUp_CityY_Pickup_23",
+    "PickedUp_CityY_Pickup_17",
+    "PickedUp_CityY_Pickup_34",
+    "PickedUp_CityY_Pickup_2",
+    "PickedUp_CityY_Pickup_30",
+    "PickedUp_CityY_Pickup_16",
+    "PickedUp_CityY_Pickup_31",
+    "PickedUp_CityY_Pickup_37",
+    {
+     "breakable": 15
+    },
+    "PickedUp_CityY_Pickup_9",
+    "PickedUp_CityY_Pickup_7",
+    "PickedUp_CityY_Riddler_6",
+    "PickedUp_CityY_Pickup_22"
+   ]
+  },
+  {
+   "id": 21,
+   "region": "CityY",
+   "pieces": [
+    "PickedUp_CityY_Pickup_18",
+    "PickedUp_CityY_Pickup_3",
+    "PickedUp_CityY_Pickup_8",
+    "PickedUp_CityY_Pickup_36",
+    "PickedUp_CityY_Pickup_32",
+    "PickedUp_CityY_Riddler_14",
+    "PickedUp_CityY_Pickup_33",
+    "PickedUp_CityY_Riddler_23",
+    "PickedUp_CityY_Pickup_10",
+    "PickedUp_CityY_Pickup_29",
+    "PickedUp_CityY_Pickup_5",
+    "PickedUp_CityY_Pickup_27",
+    "PickedUp_CityY_Pickup_11",
+    "PickedUp_CityY_Pickup_25",
+    {
+     "breakable": 5
+    },
+    "PickedUp_CityY_Riddler_29",
+    "PickedUp_CityY_Pickup_15",
+    "PickedUp_CityY_Pickup_20"
+   ]
+  },
+  {
+   "id": 22,
+   "region": "CityY",
+   "pieces": [
+    {
+     "breakable": 10
+    },
+    "PickedUp_CityY_Pickup_21",
+    "PickedUp_CityY_Pickup_1",
+    "PickedUp_CityY_Pickup_35",
+    "PickedUp_CityY_Riddler_30",
+    "PickedUp_CityY_Pickup_26",
+    "PickedUp_CityY_Pickup_41",
+    "PickedUp_CityY_Pickup_12",
+    "PickedUp_CityY_Pickup_40",
+    "PickedUp_CityY_Riddler_36",
+    "PickedUp_CityY_Pickup_14",
+    "PickedUp_CityY_Pickup_28",
+    "PickedUp_CityY_Pickup_6",
+    "PickedUp_CityY_Pickup_4",
+    "PickedUp_CityY_Riddler_40",
+    "PickedUp_CityY_Pickup_38",
+    "PickedUp_CityY_Pickup_39",
+    "PickedUp_CityY_Pickup_19"
+   ]
+  },
+  {
+   "id": 50,
+   "region": "Stagg",
+   "pieces": [
+    "PickedUp_Stagg_Pickup_14",
+    "PickedUp_Stagg_Pickup_24",
+    "PickedUp_Stagg_Pickup_3",
+    {
+     "breakable": 5
+    },
+    "PickedUp_Stagg_Pickup_6",
+    "PickedUp_Stagg_Pickup_9",
+    "PickedUp_Stagg_Pickup_16",
+    "PickedUp_Stagg_Pickup_19",
+    "PickedUp_Stagg_Riddler_27"
+   ]
+  },
+  {
+   "id": 51,
+   "region": "Stagg",
+   "pieces": [
+    "PickedUp_Stagg_Pickup_10",
+    "PickedUp_Stagg_Pickup_5",
+    "PickedUp_Stagg_Pickup_20",
+    {
+     "breakable": 10
+    },
+    "PickedUp_Stagg_Riddler_11",
+    "PickedUp_Stagg_Pickup_8",
+    "PickedUp_Stagg_Pickup_17",
+    "PickedUp_Stagg_Pickup_2",
+    "PickedUp_Stagg_Pickup_23"
+   ]
+  },
+  {
+   "id": 52,
+   "region": "Stagg",
+   "pieces": [
+    "PickedUp_Stagg_Pickup_7",
+    {
+     "breakable": 15
+    },
+    "PickedUp_Stagg_Pickup_13",
+    "PickedUp_Stagg_Pickup_4",
+    "PickedUp_Stagg_Pickup_1",
+    "PickedUp_Stagg_Pickup_22",
+    "PickedUp_Stagg_Pickup_18",
+    "PickedUp_Stagg_Riddler_35",
+    "PickedUp_Stagg_Pickup_25"
+   ]
+  },
+  {
+   "id": 40,
+   "region": "Film",
+   "pieces": [
+    "PickedUp_Film_Pickup_44",
+    {
+     "breakable": 15
+    },
+    "PickedUp_Film_Pickup_36",
+    "PickedUp_Film_Pickup_41",
+    "PickedUp_Film_Pickup_40",
+    "PickedUp_Film_Pickup_37",
+    "PickedUp_Film_Riddler_13",
+    "PickedUp_Film_Pickup_46",
+    "PickedUp_Film_Pickup_26"
+   ]
+  },
+  {
+   "id": 41,
+   "region": "Film",
+   "pieces": [
+    "PickedUp_Film_Pickup_35",
+    "PickedUp_Film_Pickup_50",
+    "PickedUp_Film_Pickup_34",
+    {
+     "breakable": 5
+    },
+    "PickedUp_Film_Pickup_27",
+    "PickedUp_Film_Pickup_42",
+    "PickedUp_Film_Pickup_30",
+    "PickedUp_Film_Pickup_39",
+    "PickedUp_Film_Riddler_37"
+   ]
+  },
+  {
+   "id": 42,
+   "region": "Film",
+   "pieces": [
+    "PickedUp_Film_Pickup_31",
+    "PickedUp_Film_Pickup_47",
+    "PickedUp_Film_Pickup_32",
+    {
+     "breakable": 10
+    },
+    "PickedUp_Film_Riddler_16",
+    "PickedUp_Film_Pickup_45",
+    "PickedUp_Film_Pickup_33",
+    "PickedUp_Film_Pickup_28",
+    "PickedUp_Film_Pickup_48"
+   ]
+  },
+  {
+   "id": 70,
+   "region": "HideOut",
+   "pieces": [
+    "PickedUp_HideOut_Pickup_1",
+    "PickedUp_HideOut_Riddler_20",
+    "PickedUp_HideOut_Pickup_8",
+    "PickedUp_HideOut_Pickup_9",
+    "PickedUp_HideOut_Pickup_13",
+    "PickedUp_HideOut_Pickup_2",
+    "PickedUp_HideOut_Pickup_10",
+    {
+     "breakable": 10
+    },
+    "PickedUp_HideOut_Pickup_14"
+   ]
+  },
+  {
+   "id": 71,
+   "region": "HideOut",
+   "pieces": [
+    "PickedUp_HideOut_Pickup_12",
+    "PickedUp_HideOut_Pickup_11",
+    {
+     "breakable": 15
+    },
+    "PickedUp_HideOut_Pickup_19",
+    "PickedUp_HideOut_Riddler_24",
+    "PickedUp_HideOut_Pickup_3",
+    "PickedUp_HideOut_Pickup_20",
+    "PickedUp_HideOut_Pickup_7",
+    "PickedUp_HideOut_Pickup_15"
+   ]
+  },
+  {
+   "id": 72,
+   "region": "HideOut",
+   "pieces": [
+    "PickedUp_HideOut_Pickup_4",
+    "PickedUp_HideOut_Pickup_5",
+    "PickedUp_HideOut_Pickup_21",
+    "PickedUp_HideOut_Pickup_18",
+    "PickedUp_HideOut_Pickup_17",
+    "PickedUp_HideOut_Riddler_34",
+    {
+     "breakable": 5
+    },
+    "PickedUp_HideOut_Pickup_6",
+    "PickedUp_HideOut_Pickup_16"
+   ]
+  }
  ]
 }

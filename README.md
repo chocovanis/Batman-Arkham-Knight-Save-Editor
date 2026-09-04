@@ -49,7 +49,10 @@ This matters more than the feature list.
   a freed Catwoman, so if you set 243 on an early save the game's own gate
   simply will not start the fight. You get a counter that looks odd, not a
   broken playthrough.
-- It refuses to edit a save slot that does not have all three rotation files.
+- It only gives you collectibles in areas your save has already been to. A save
+  that has never reached Arkham Knight HQ has no Riddler records for it, and
+  inventing them would leave the counter and the collectibles menu disagreeing.
+  The editor says which areas it skipped and why.
 - It refuses to write while the game is running.
 
 ---
@@ -91,6 +94,21 @@ opens the most recently written file, which is the one the game will read.
 
 Both the Steam and GOG/Epic variants are supported and detected automatically
 (GOG/Epic files carry an extra 4-byte prefix).
+
+### If you install a save you downloaded
+
+**A save file carries the slot number it belongs to inside it, at byte `0x65`, and
+the game believes that rather than the filename.** Renaming someone else's
+`BAK1Save0x2.sgd` to `BAK1Save2x0.sgd` does not move it to slot 3 — it still claims
+slot 1, and it will hide the save you already have there. Your own save is not
+deleted, but it disappears from the save list until the downloaded file is removed
+or its byte is corrected.
+
+This does not affect the editor, which edits your save where it already is and never
+changes its slot. It matters only if you copy save files around by hand. If you do:
+set byte `0x65` to the slot digit in the filename, keep a copy of anything you
+overwrite, and fully quit and relaunch the game afterwards — the save list is only
+read at startup.
 
 ---
 
@@ -161,11 +179,18 @@ If you would rather not deal with it, run from source instead — see Option B.
 
 **I edited my save and nothing changed in game.**
 In order of likelihood:
-1. The game was still running when you edited. Close it fully and redo the edit.
-2. Steam Cloud restored its own copy over yours. Close the game, let Steam
+1. You added the edited file as a **new** save slot. The game does not reliably
+   notice one. Replace a slot it already has — that is what the editor does when
+   you point it at an existing save, and it is what save mods tell you to do.
+2. The game was still running when you edited. Close it fully and redo the edit.
+3. Steam Cloud restored its own copy over yours. Close the game, let Steam
    finish syncing, then edit and start the game from Steam.
-3. You edited a different rotation than the one the game loads. The editor
+4. You edited a different rotation than the one the game loads. The editor
    warns you when the file you opened is not the newest in its slot.
+
+**It says it skipped an area.**
+Your save has no Riddler records for that area yet, because you have not been
+there. Go there once in game, save, and run the editor again to finish the set.
 
 **The counter says 243/243 but the boss fight will not start.**
 That is the safety gate working as intended, not a bug. The fight also requires
@@ -181,14 +206,22 @@ scope is what would make the tool capable of breaking a playthrough.
 ## How it works
 
 Arkham Knight saves are fixed-size, uncompressed, unencrypted and unchecksummed.
-Riddler collectibles are recorded as the **presence of a flag name** in a counted
-string array — collecting something means appending a string and adjusting one
-length field in the header. That is exactly what this tool does, and no more:
-existing bytes are never moved or rewritten, and the file size never changes.
+The file size never changes: insertions are absorbed by the megabyte of zero
+padding at the end, and existing entries are never moved or rewritten.
 
-The format was reverse-engineered from a corpus of 53 real save files across
-both platforms and every progression state from 0 to 243. The challenge count
-computed from the flags matches the game's own cached counter in every one.
+Collecting something is not one edit, though. The game keeps its Riddler progress
+in six separate places — a flag list, one or two world-state key/value stores, a
+243-slot per-challenge block, a riddle array, a per-region trophy cache and the
+counter string the HUD displays — and it updates all of them together. An earlier
+build wrote only the flag list; the resulting save loaded perfectly and showed the
+old progress. The editor now writes every one of them, and refuses to touch a save
+in which it cannot find all six.
+
+The format was reverse-engineered from a corpus of 64 real save files across both
+platforms and every progression state from 0 to 243. Each rule is checked against
+all of them, not against the one file it was derived from: the challenge count
+matches the game's own cached counter in all 64, and all 12,960 per-challenge
+status bytes match the puzzle table in the game's own config.
 
 ## Contributing / reporting a problem
 
@@ -201,3 +234,19 @@ personal game data.
 GPL-3.0. See [LICENSE](LICENSE). Not affiliated with, endorsed by, or connected
 to Warner Bros., Rocksteady Studios, or DC Comics. Batman: Arkham Knight is
 their trademark.
+
+**No game code, assets, text or save data is redistributed here.** The repository is
+source only. The one data file, `aksave/data/manifest.json`, holds two factual tables
+about the game and nothing else:
+
+- the 315 collectible **flag identifiers** (`PickedUp_CityZ_Pickup_21` and the like),
+  extracted from a completed save. The human-readable names shown in the editor are
+  generated by `tools/build_manifest.py`, not taken from the game;
+- the 18-entry **Riddler puzzle table**, derived from the game's own
+  `BmGame/Config/DefaultGame.ini` (`[BmGame.RGameInfo].RiddlerPuzzles`), which is a
+  plain-text config file in every installation. It records which of the 243
+  challenges each puzzle is made of, which is what lets the editor set the
+  collectibles menu correctly rather than only the counter.
+
+Both are regenerable from your own installation with `tools/build_manifest.py`, and
+neither contains game content.
