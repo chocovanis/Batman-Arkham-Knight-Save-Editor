@@ -182,6 +182,10 @@ class Activity:
         self.buttons = buttons
         self.queue: queue.Queue = queue.Queue()
         self.busy = False
+        # Set by the app: how a failure is put in front of the user. Kept as a
+        # hook rather than a direct messagebox call so this class stays free of
+        # tkinter dialogs and can be driven from a test.
+        self.on_failure = None
         self.root.after(50, self._drain)
 
     def log(self, message: str) -> None:
@@ -207,8 +211,10 @@ class Activity:
                 result = fn(self.log)
                 self.queue.put(("done", (on_done, result, False)))
             except Exception as exc:
-                self.queue.put(("log", f"FAILED: {exc}"))
-                self.queue.put(("log", traceback.format_exc().strip()))
+                # The traceback has to be captured here, while the exception is
+                # still active; whether it is worth showing is decided on the
+                # UI thread, where the dialog is.
+                self.queue.put(("fail", (exc, traceback.format_exc().strip())))
                 self.queue.put(("done", (on_error, None, True)))
 
         threading.Thread(target=worker, daemon=True).start()
@@ -234,6 +240,22 @@ class Activity:
                     self.log_widget.insert("end", f"{stamp}  {payload}\n")
                     self.log_widget.see("end")
                     self.log_widget.configure(state="disabled")
+                elif kind == "fail":
+                    # A failure has to leave the window, not just the log. The
+                    # log is nine lines and `on_error=reload` writes three more
+                    # after this, so an unaccompanied FAILED line ended up
+                    # scrolled away under "Loaded ... 215/243" — a failed write
+                    # signing off as a success.
+                    exc, tb = payload
+                    _, _, message, show_tb = failure_dialog(exc)
+                    self.queue.put(("log", f"FAILED: {exc}"))
+                    if show_tb:
+                        self.queue.put(("log", tb))
+                    if self.on_failure:
+                        try:
+                            self.on_failure(exc)
+                        except Exception as hook_exc:
+                            self.queue.put(("log", f"FAILED (dialog): {hook_exc}"))
                 elif kind == "done":
                     # Cleared in every path, so a crashed worker cannot leave
                     # the UI permanently locked.
@@ -259,12 +281,16 @@ import sys
 from pathlib import Path
 from tkinter import filedialog, messagebox
 
-from aksave.backup import create_backup, list_backups, restore_backup
+from aksave.backup import (BackupError, backup_contents, create_backup,
+                           list_backups, restore_backup)
 from aksave.catalog import Catalog
-from aksave.editor import SaveEditor
+from aksave.editor import RailError as EditorRailError
+from aksave.editor import SaveEditor, skipped_note, where_to_find
 from aksave.sgd import SgdFile
-from aksave.rails import (check_slot_complete, check_writable_target,
+from aksave.rails import RailError as RailsRailError
+from aksave.rails import (SLOT_RE, check_slot_complete, check_writable_target,
                           game_is_running, slot_files)
+from aksave.sgd import SgdError
 
 TYPE_LABELS = {"Pickup": "Riddler Trophies", "Riddler": "Riddles",
                "Bomb": "Bomb Rioters", "MilitiaShield": "Breakables",
@@ -297,6 +323,149 @@ def window_geometry(screen_w: int, screen_h: int) -> tuple[int, int, int, int]:
     win_w = min(win_w, max(1, screen_w - 40))
     win_h = min(win_h, max(1, screen_h - 80))
     return win_w, win_h, max(0, (screen_w - win_w) // 2), max(0, (screen_h - win_h) // 2)
+
+
+# The checkbox is the last thing the user reads before clicking, and the only
+# control that decides whether the save ends at 242 or 243, so it names the
+# island. It deliberately does NOT name a number: three schemes number that one
+# warehouse and they disagree, so an index here would invite the wrong lookup.
+# The exact building goes in the log, from aksave.editor.where_to_find.
+# A tk.Checkbutton does not wrap, so this has to stay one window-width line.
+LEAVE_ONE_LABEL = ("Leave one Bleake Island trophy uncollected, so the "
+                   "achievement still unlocks when you pick it up in game")
+
+
+class Refused(RuntimeError):
+    """A rail declined to act. Nothing was written."""
+
+
+def failure_dialog(exc: BaseException) -> tuple[str, str, str, bool]:
+    """How to report an operation that failed: (kind, title, message, traceback).
+
+    Three separate defects came out of not making this distinction. A rail
+    refusing is not a crash, and its message is already written for the
+    player — printing a traceback under it pushed the one useful line out of
+    the nine-line log panel. A locked file is the commonest real failure and
+    `[WinError 5] Access is denied` on its own is not something anyone can
+    act on. And nothing ever raised a dialog at all, so a failed write ended
+    with `reload()` logging "Loaded ... 215/243" and looking like a success.
+    """
+    if isinstance(exc, (Refused, EditorRailError, RailsRailError,
+                        BackupError, SgdError)):
+        return "info", "Nothing was changed", str(exc), False
+
+    if isinstance(exc, OSError):
+        return "error", "The save could not be written", (
+            f"{exc}\n\n"
+            f"Usually this means another program is holding the file — the "
+            f"game itself, Steam syncing, OneDrive, or an antivirus scan — or "
+            f"that the folder is read-only.\n\n"
+            f"Close the game and Steam completely, then try again. Your save "
+            f"was backed up before the write; the activity log says where."
+        ), False
+
+    return "error", "Something went wrong", f"{type(exc).__name__}: {exc}", True
+
+
+def restore_warning(names: list[str], slot_dir) -> str:
+    """What a restore is about to overwrite, in the user's terms.
+
+    Restore is the widest write the tool makes, and the only one that reaches
+    outside the save being edited: it puts back every file the backup holds —
+    every slot in the folder, `profile.bin` and `LBGameCache.dat` — because
+    that is what a rollback means. The editor's whole promise is that it
+    touches one slot and never those two files, so the one place it does
+    something wider has to say so before it does it.
+    """
+    saves = [n for n in names if n.lower().endswith(".sgd")]
+    others = [n for n in names if n not in saves]
+    slots = sorted({slot_label(Path(n)) for n in saves})
+
+    lines = [f"This puts back {len(names)} file(s), overwriting what is in",
+             f"{slot_dir} right now:", ""]
+    if slots:
+        lines.append(f"    {', '.join(slots)}  ({len(saves)} save files)")
+    if others:
+        lines.append(f"    {', '.join(others)}")
+    lines += ["",
+              "That includes save slots you are not editing." if len(slots) > 1 else
+              "That is the whole save folder, not just the file you have open.",
+              "",
+              "The current state will be backed up first, so this can be undone.",
+              "",
+              "Restore now?"]
+    return "\n".join(lines)
+
+
+def refusal_dialog(exc: BaseException) -> tuple[str, str, str]:
+    """How to present a save that would not open: (kind, title, message).
+
+    Two different things get called "cannot open" and they deserve different
+    dialogs. A `RailError` from the editor means we read the save perfectly and
+    are declining to edit it, for a reason the player can act on — that is
+    information, and its message is already written for them. Anything else is
+    a file we did not understand, which is an error and where the diagnostic
+    text is the useful part.
+
+    Getting this wrong is not cosmetic. Opening a clean new-game slot used to
+    raise an error box titled "Cannot read save" reading "no world-state store
+    holding collectibles was found": a sentence about our parser, under a
+    heading that was not true.
+    """
+    if isinstance(exc, EditorRailError):
+        return "info", "This save cannot be edited yet", str(exc)
+    return "error", "Cannot read this save", str(exc)
+
+
+def slot_label(path) -> str:
+    """The slot number the game's own save list shows for this filename.
+
+    `BAK1Save0x*` is UI slot 1, and nobody knows that. The consequence of not
+    saying it is severe and specific: a save folder can hold a 51-hour
+    playthrough and a throwaway test save that differ by one digit in the
+    middle of a filename, and the user has no way to tell from the window
+    which one is loaded. The playtime helps; the slot number is the answer.
+
+    (This reads the FILENAME. A save also carries its own slot index at byte
+    0x65 and the game believes that instead, but the two only disagree for
+    files copied in by hand, and the editor never moves a save between slots.)
+    """
+    m = SLOT_RE.match(Path(path).name)
+    return f"Slot {int(m.group(1)) + 1}" if m else Path(path).name
+
+
+def region_row_label(region_name: str, region: str, untracked: set) -> str:
+    """The tree lists all six areas whether or not this save can hold them."""
+    if region in untracked:
+        return f"{region_name}   (not editable - never visited)"
+    return region_name
+
+
+def status_text(path, editor, newest_rotation) -> str:
+    """The one line the user reads to confirm we are pointed at the right save.
+
+    Pure, so the wording can be checked without a display — the widget tests
+    cannot construct a Tk root, and this is the most consequential sentence in
+    the window.
+    """
+    h = int(editor.playtime_seconds // 3600)
+    m = int(editor.playtime_seconds % 3600 // 60)
+    line = "  ·  ".join([
+        slot_label(path),
+        Path(path).name,
+        editor.platform,
+        f"{h}h{m:02d}m",
+        f"{editor.challenge_count}/243 challenges "
+        f"({editor.collected_count}/315 objects)",
+    ])
+    if editor.untracked_regions:
+        names = ", ".join(sorted(editor.catalog.region_name(r)
+                                 for r in editor.untracked_regions))
+        line += f"  ·  {names} not editable"
+    if newest_rotation is not None:
+        line += ("  ·  not the newest rotation "
+                 f"(the game loads {Path(newest_rotation).name})")
+    return line
 
 
 def find_save_dirs() -> list[Path]:
@@ -336,8 +505,14 @@ class EditorApp:
         self._build_tree()
         self._build_actions()
         self.activity = Activity(root, self.log_widget, self.buttons)
+        self.activity.on_failure = self._show_failure
         self.activity.log("Ready. Choose a save file to begin.")
         self._autodetect()
+
+    def _show_failure(self, exc: BaseException) -> None:
+        kind, title, message, _ = failure_dialog(exc)
+        (messagebox.showinfo if kind == "info" else messagebox.showerror)(
+            title, message)
 
     # -- zone 1 ---------------------------------------------------------
     def _build_header(self):
@@ -388,18 +563,30 @@ class EditorApp:
         if not self.editor:
             return
         collected = self.editor.collected
+        untracked = self.editor.untracked_regions
         for region, by_type in self.catalog.grouped().items():
             items = [i for t in by_type.values() for i in t]
             have = sum(1 for i in items if i.flag in collected)
-            node = self.tree.insert("", "end", text=self.catalog.item(items[0].flag).region_name,
-                                    values=(f"{have}/{len(items)}",), open=False)
+            node = self.tree.insert(
+                "", "end",
+                text=region_row_label(self.catalog.item(items[0].flag).region_name,
+                                      region, untracked),
+                values=(f"{have}/{len(items)}",), open=False)
             for type_, entries in by_type.items():
                 thave = sum(1 for i in entries if i.flag in collected)
                 sub = self.tree.insert(node, "end", text=TYPE_LABELS[type_],
                                        values=(f"{thave}/{len(entries)}",))
+                editable = region not in untracked
                 for item in entries:
+                    if item.flag in collected:
+                        state = "collected"
+                    else:
+                        # Once the region is expanded its "(not editable)"
+                        # parent row is off screen, so each leaf has to say so
+                        # for itself.
+                        state = "—" if editable else "not editable"
                     self.tree.insert(sub, "end", iid=item.flag, text=item.display,
-                                     values=("collected" if item.flag in collected else "—"))
+                                     values=(state,))
 
     # -- zone 3 ---------------------------------------------------------
     def _build_actions(self):
@@ -436,9 +623,7 @@ class EditorApp:
         # whether the save ends at 242 or 243. The classic widget draws a real
         # tick when on and an empty box when off, which is unambiguous.
         self.leave_one_check = tk.Checkbutton(
-            f, variable=self.leave_one,
-            text="Leave one collectible uncollected, so achievements still "
-                 "unlock when you pick it up in game",
+            f, variable=self.leave_one, text=LEAVE_ONE_LABEL,
             anchor="w", highlightthickness=0, bd=0,
             font=(UI_FONT, round(BASE_PT * self.ui_scale)),
             background=self.palette["bg"], foreground=self.palette["text"],
@@ -463,13 +648,22 @@ class EditorApp:
             messagebox.showinfo("No save", "Open a save file first.")
             return
         folder = Path(folder)
-        folder.mkdir(parents=True, exist_ok=True)
-        if sys.platform == "win32":
-            os.startfile(folder)
-        elif sys.platform == "darwin":
-            subprocess.run(["open", str(folder)])
-        else:
-            subprocess.run(["xdg-open", str(folder)])
+        # Runs on the UI thread, outside Activity. In the --noconsole build an
+        # exception here reaches nothing at all and the button just looks dead.
+        try:
+            folder.mkdir(parents=True, exist_ok=True)
+            if sys.platform == "win32":
+                os.startfile(folder)
+            elif sys.platform == "darwin":
+                subprocess.run(["open", str(folder)])
+            else:
+                subprocess.run(["xdg-open", str(folder)])
+        except Exception as exc:
+            self.activity.log(f"Could not open {folder}: {exc}")
+            messagebox.showerror(
+                "Cannot open folder",
+                f"{folder}\n\ncould not be opened:\n{exc}")
+            return
         self.activity.log(f"Opened {folder}")
 
     def backup_root(self) -> Path:
@@ -486,11 +680,25 @@ class EditorApp:
 
     def _write(self, log, added: list[str]):
         """Shared write path. Rails, then backup, then write, then verify."""
+        # Nothing to add means nothing to write. Without this, a second click
+        # on "Collect Everything" took a full-folder backup, ran os.replace
+        # over the live save and logged "Wrote 2,428,928 bytes / Verified:
+        # 242/243" for a change that did not exist — bumping the save's mtime,
+        # provoking a Steam Cloud re-upload, and opening an os.replace window
+        # on the user's real playthrough for no reason at all.
+        if not added:
+            log("Nothing to add — everything selected is already collected. "
+                "The save was not touched.")
+            if self.editor.left_behind:
+                log(f"Still outstanding: "
+                    f"{where_to_find(self.editor.left_behind, self.catalog)}")
+            return added
+
         check_writable_target(self.save_path)
         rotations = check_slot_complete(self.save_path)
         log(f"Slot has {len(rotations)} rotation files — OK")
         if game_is_running():
-            raise RuntimeError(
+            raise Refused(
                 "Batman: Arkham Knight is running. Close the game completely "
                 "before editing, or it will overwrite the change on exit.")
 
@@ -519,7 +727,16 @@ class EditorApp:
 
         check = SaveEditor(self.save_path.read_bytes())
         if check.challenge_count != self.editor.challenge_count:
-            raise RuntimeError("re-read did not match; restore from the backup above")
+            # After the write, so unlike every other failure here the save on
+            # disk HAS changed. "restore from the backup above" assumed the
+            # user knew that meant the Restore... button and which row to pick.
+            raise RuntimeError(
+                f"The save was written but read back as "
+                f"{check.challenge_count}/243 instead of "
+                f"{self.editor.challenge_count}/243. Something else is writing "
+                f"to this folder - Steam Cloud is the usual culprit. Click "
+                f"Restore..., pick the backup listed above, and put the game "
+                f"back the way it was before trying again.")
         log(f"Verified: {check.challenge_count}/243")
         return added
 
@@ -533,6 +750,15 @@ class EditorApp:
         def work(log):
             added = self.editor.collect_all(leave_one=leave_one)
             log(f"Adding {len(added)} flags → {self.editor.challenge_count}/243")
+            if self.editor.left_behind:
+                log(f"LEFT ONE for you to pick up in game, so the achievement "
+                    f"still fires: "
+                    f"{where_to_find(self.editor.left_behind, self.catalog)}")
+            # The CLI has always said this; the window said nothing at all, so
+            # a save that stops at 215/243 looked like the tool going wrong.
+            note = skipped_note(self.editor)
+            if note:
+                log(note)
             return self._write(log, added)
         # on_error re-reads the file. work() has already mutated self.editor by
         # the time _write can raise, so without this the in-memory save would
@@ -543,16 +769,61 @@ class EditorApp:
     def on_collect_selected(self):
         if not self._ready():
             return
-        flags = [i for i in self.tree.selection() if self.catalog.known(i)]
+        flags = self._selected_flags()
         if not flags:
-            messagebox.showinfo("Nothing selected", "Select one or more collectibles first.")
+            messagebox.showinfo("Nothing selected",
+                                "Select one or more collectibles first.")
             return
+        untracked = self.editor.untracked_regions
+        blocked = [f for f in flags if self.catalog.item(f).region in untracked]
+        if blocked:
+            # _check would refuse these anyway, but only after the user had
+            # committed to the click, and as a RailError in the log.
+            names = ", ".join(sorted({self.catalog.item(f).region_name
+                                      for f in blocked}))
+            flags = [f for f in flags if f not in blocked]
+            if not flags:
+                messagebox.showinfo(
+                    "Not editable yet",
+                    f"Everything you selected is in {names}, which this save "
+                    f"has no Riddler records for yet. Visit it once in game, "
+                    f"save, and reopen this file.")
+                return
+            self.activity.log(f"Skipping {len(blocked)} collectible(s) in {names}: "
+                              f"this save has no Riddler records for that area yet.")
         def work(log):
             added = self.editor.collect(flags)
             log(f"Adding {len(added)} flags → {self.editor.challenge_count}/243")
             return self._write(log, added)
         self.activity.run("collect selected", work, lambda _: self.refresh(),
                           on_error=self.reload)
+
+    def _selected_flags(self) -> list[str]:
+        """Every collectible the selection covers, group rows included.
+
+        Leaf rows carry `iid=item.flag`; region and type rows get whatever iid
+        Tk assigns ("I001"), which `catalog.known` rejects. Filtering the
+        selection through `known` therefore threw away exactly the rows the
+        tree is grouped to invite you to use: selecting "Bleake Island 0/66"
+        and clicking Collect Selected answered "Nothing selected", and a mixed
+        selection silently dropped the 66 and collected the two leaves beside
+        it.
+        """
+        out: list[str] = []
+        seen: set[str] = set()
+
+        def walk(iid: str) -> None:
+            children = self.tree.get_children(iid)
+            if children:
+                for child in children:
+                    walk(child)
+            elif self.catalog.known(iid) and iid not in seen:
+                seen.add(iid)
+                out.append(iid)
+
+        for iid in self.tree.selection():
+            walk(iid)
+        return out
 
     def on_backup(self):
         if not self._ready():
@@ -570,20 +841,41 @@ class EditorApp:
         # button just looks dead.
         if not self._ready():
             return
-        entries = list_backups(self.backup_root())
+        # list_backups is careful now, but it still walks the filesystem on the
+        # UI thread, outside Activity. An exception here reaches nothing: in
+        # the --noconsole build sys.stderr is None, so Tk's default handler
+        # prints nowhere and the button is simply dead. This is the recovery
+        # path; it does not get to fail silently.
+        try:
+            entries = list_backups(self.backup_root())
+        except Exception as exc:
+            self.activity.log(f"Could not read the backup folder: {exc}")
+            messagebox.showerror(
+                "Cannot list backups",
+                f"The backup folder could not be read:\n\n{exc}\n\n"
+                f"Use Open Backup Folder to look at it directly.")
+            return
         if not entries:
             messagebox.showinfo("No backups", "No backups have been made yet.")
             return
         win = tk.Toplevel(self.root)
         win.title("Restore a backup")
-        lst = tk.Listbox(win, width=52, height=12)
+        # exportselection=0: without it the listbox loses its selection the
+        # moment anything else takes the X selection, and Restore then reads
+        # as a dead button.
+        lst = tk.Listbox(win, width=52, height=12, exportselection=0)
         for e in entries:
             lst.insert("end", f"{e.created}   {e.label or '—'}   ({e.files} files)")
         lst.pack(padx=14, pady=14)
 
-        def do_restore():
+        def do_restore(_event=None):
             sel = lst.curselection()
             if not sel:
+                # Used to return silently, which is indistinguishable from the
+                # button being broken.
+                messagebox.showinfo(
+                    "Nothing chosen", "Select a backup from the list first.",
+                    parent=win)
                 return
             # This dialog's button is not in self.buttons, so it stays live
             # while work is running. Destroying the window first would then
@@ -594,17 +886,62 @@ class EditorApp:
                             "choose a backup again.", parent=win)
                 return
             entry = entries[sel[0]]
+            names = backup_contents(entry.path)
+            if not names:
+                messagebox.showerror(
+                    "Unusable backup",
+                    f"{entry.created} has no readable manifest, so there is no "
+                    f"way to check what it holds. It will not be restored.",
+                    parent=win)
+                return
+            if not messagebox.askyesno(
+                    "Restore this backup?",
+                    restore_warning(names, self.save_path.parent), parent=win):
+                return
             win.destroy()
-            def work(log):
-                names = restore_backup(entry.path, self.save_path.parent)
-                log(f"Restored {len(names)} files from {entry.created}")
-            # restore_backup verifies every hash before copying, but the copy
-            # loop itself is not atomic, so a failure partway can still leave
-            # disk and memory disagreeing. Re-read either way.
-            self.activity.run("restore", work, lambda _: self.reload(),
-                              on_error=self.reload)
+            self.restore_from(entry.path, entry.created)
+
+        lst.bind("<Double-Button-1>", do_restore)
         ttk.Button(win, text="Restore", style="Accent.TButton",
                    command=do_restore).pack(pady=(0, 14))
+
+    def restore_from(self, backup_dir: Path, label: str = ""):
+        """Roll the save folder back, with the rails a write would get.
+
+        Restore had none at all, which is backwards: it is the widest write
+        the tool makes and the one a user only reaches on a bad day. Two
+        things were missing and both cost real data.
+
+        The game-running rail. Restoring under a running game loses the
+        restore, because the game writes its own save over the top when it
+        exits — the exact hazard the edit path refuses, on the path the user
+        turns to when the edit went wrong.
+
+        A backup of what is being discarded. Restore overwrites every slot in
+        the folder, so a mis-clicked row is otherwise a one-way trip that can
+        take a playthrough the user never meant to touch.
+        """
+        slot_dir = self.save_path.parent          # read on the UI thread
+
+        def work(log):
+            if game_is_running():
+                raise Refused(
+                    "Batman: Arkham Knight is running. Close the game "
+                    "completely before restoring, or it will write its own "
+                    "save over the restored one when it exits.")
+            log(f"Backing up the current state of {slot_dir} first…")
+            dest = create_backup(slot_dir, self.backup_root(),
+                                 label="before restore")
+            log(f"Backed up to {dest} (verified)")
+            names = restore_backup(backup_dir, slot_dir)
+            log(f"Restored {len(names)} file(s) from {label or backup_dir.name}: "
+                f"{', '.join(names)}")
+
+        # restore_backup verifies every hash before copying, but the copy loop
+        # itself is not atomic, so a failure partway can still leave disk and
+        # memory disagreeing. Re-read either way.
+        self.activity.run("restore", work, lambda _: self.reload(),
+                          on_error=self.reload)
 
     def on_copy_log(self):
         self.root.clipboard_clear()
@@ -630,15 +967,24 @@ class EditorApp:
         Rank with the same _rotation_rank the "not the newest rotation" warning
         uses. When these two disagreed, the app would open a file and then
         immediately warn that the file it had just opened was the wrong one.
+
+        The same reasoning covers a save with nothing collected in it, which
+        the editor refuses: a folder can hold a brand-new game beside a real
+        playthrough, and a brand-new game is by definition the one played most
+        recently. Testing it by the flag array rather than by constructing a
+        SaveEditor keeps this cheap — it is on the startup path, and parsing
+        every store in every rotation is not.
         """
-        complete = []
+        usable = []
         for p in saves:
             try:
                 check_slot_complete(p)
-                complete.append(p)
+                if any(f.startswith("PickedUp_")
+                       for f in SgdFile(p.read_bytes()).read_flags()):
+                    usable.append(p)
             except Exception:
                 pass
-        return max(complete or saves, key=cls._rotation_rank)
+        return max(usable or saves, key=cls._rotation_rank)
 
     def _autodetect(self):
         for d in find_save_dirs():
@@ -721,20 +1067,34 @@ class EditorApp:
             return None
         return newest
 
-    def load(self, path: Path):
+    def load(self, path: Path) -> bool:
         try:
-            self.editor = SaveEditor(path.read_bytes(), self.catalog)
-            self.save_path = path
+            editor = SaveEditor(path.read_bytes(), self.catalog)
         except Exception as exc:
-            self.activity.log(f"Could not read {path.name}: {exc}")
-            messagebox.showerror("Cannot read save", str(exc))
-            return
+            kind, title, message = refusal_dialog(exc)
+            self.activity.log(f"{path.name}: {message}")
+            # Nothing was replaced, so say what is still open. Otherwise the
+            # log announces a failure while the status line names a different
+            # save, and the user cannot tell which one a click would write.
+            if self.save_path is not None:
+                self.activity.log(f"Still working with {slot_label(self.save_path)} "
+                                  f"— {self.save_path.name}")
+            (messagebox.showinfo if kind == "info" else messagebox.showerror)(
+                title, message)
+            return False
+        self.editor, self.save_path = editor, path
         self.newest_rotation = self._newer_rotation(path)
         self.refresh()
         h = int(self.editor.playtime_seconds // 3600)
         m = int(self.editor.playtime_seconds % 3600 // 60)
-        self.activity.log(f"Loaded {path.name} ({self.editor.platform}, {h}h{m:02d}m, "
+        self.activity.log(f"Loaded {slot_label(path)} — {path.name} "
+                          f"({self.editor.platform}, {h}h{m:02d}m, "
                           f"{self.editor.challenge_count}/243)")
+        # Say this on open, not only after the write. A user who learns at the
+        # end that 27 challenges were unreachable has already spent the click.
+        note = skipped_note(self.editor)
+        if note:
+            self.activity.log(note)
         if self.newest_rotation is not None:
             self.activity.log(
                 f"WARNING: {path.name} is not the newest rotation in this slot. "
@@ -743,24 +1103,45 @@ class EditorApp:
                 f"will most likely never be seen in game — open "
                 f"{self.newest_rotation.name} instead, unless you specifically "
                 f"mean to edit this rotation.")
+        return True
 
     def reload(self):
-        if self.save_path:
-            self.load(self.save_path)
+        """Re-read the file after an operation, successful or failed.
+
+        This is NOT the same situation as "Open Save...". By the time reload
+        runs, `work()` has already mutated `self.editor` — collect() and
+        collect_all() both change it before `_write` runs a single rail — so
+        when the re-read fails, what `load()` politely leaves in place is the
+        abandoned mutation.
+
+        That is the one path found that could write data the user did not ask
+        for. The window went on rendering the last good state while memory
+        held 242/243, and because the flags were already there in memory, the
+        next click on a single trophy added nothing, logged "Adding 0 flags",
+        and then serialised the lot: 302 flags committed from one click.
+
+        So a save we cannot verify against disk is closed, not kept.
+        """
+        if not self.save_path:
+            return
+        path = self.save_path
+        if self.load(path):
+            return
+        self.editor = None
+        self.save_path = None
+        self.newest_rotation = None
+        self.status.configure(text="No save loaded")
+        self.tree.delete(*self.tree.get_children())
+        self.activity.log(
+            f"CLOSED {path.name}. It could not be re-read, so what is in memory "
+            f"cannot be trusted against what is on disk and nothing further "
+            f"will be written. Check the file is still there and reopen it.")
 
     def refresh(self):
         if not self.editor:
             return
-        h = int(self.editor.playtime_seconds // 3600)
-        m = int(self.editor.playtime_seconds % 3600 // 60)
-        warn = ""
-        if self.newest_rotation is not None:
-            warn = ("  ·  not the newest rotation "
-                    f"(the game loads {self.newest_rotation.name})")
         self.status.configure(
-            text=f"{self.save_path.name}  ·  {self.editor.platform}  ·  {h}h{m:02d}m  "
-                 f"·  {self.editor.challenge_count}/243 challenges "
-                 f"({self.editor.collected_count}/315 objects){warn}")
+            text=status_text(self.save_path, self.editor, self.newest_rotation))
         self.populate_tree()
 
     def on_theme(self, _event=None):
@@ -792,7 +1173,18 @@ def main():
         pass
 
     root = tk.Tk()
-    EditorApp(root)
+    try:
+        EditorApp(root)
+    except Exception as exc:
+        # Everything in __init__ and _autodetect runs before there is a log
+        # panel to write to, and the packaged build has no console. Without
+        # this, an exception here means double-clicking the exe opens nothing
+        # at all and says nothing about why.
+        import traceback
+        messagebox.showerror(
+            "The editor could not start",
+            f"{type(exc).__name__}: {exc}\n\n{traceback.format_exc()}")
+        raise
     root.mainloop()
 
 

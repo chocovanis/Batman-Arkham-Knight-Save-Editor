@@ -175,3 +175,229 @@ def test_theming_has_no_optional_engine_behind_a_try_except():
         assert lines, f"{marker} has gone missing from apply_theme"
         for ln in lines:
             assert len(ln) - len(ln.lstrip()) == 4, f"{marker} is nested: {ln!r}"
+
+
+# --- the status line -------------------------------------------------------
+# Extracted from refresh() so it can be checked without a display. This is the
+# line the user reads to confirm the tool is pointed at the save they meant,
+# which is the single most consequential thing the window tells them.
+
+from pathlib import Path
+
+from aksave.catalog import Catalog
+from aksave.editor import SaveEditor
+
+CAT = Catalog.load()
+ALL = [i.flag for i in CAT.items]
+
+
+def _editor(flags=None, **kw):
+    return SaveEditor(make_save_with_flags(flags or ALL[:10], **kw), CAT)
+
+
+def test_slot_label_maps_a_filename_to_the_slot_the_game_shows():
+    """BAK1Save0x* is UI slot 1. Nobody knows that, so the window has to say
+    it: a save folder holding a 51-hour playthrough and a throwaway differs
+    only by one digit in the middle of a filename."""
+    assert app.slot_label(Path("BAK1Save0x0.sgd")) == "Slot 1"
+    assert app.slot_label(Path("BAK1Save1x1.sgd")) == "Slot 2"
+    assert app.slot_label(Path("BAK1Save2x0.sgd")) == "Slot 3"
+
+
+def test_slot_label_falls_back_to_the_filename_when_it_is_not_a_slot():
+    assert app.slot_label(Path("something-else.sgd")) == "something-else.sgd"
+
+
+def test_status_line_leads_with_the_slot_and_keeps_the_filename():
+    line = app.status_text(Path("BAK1Save2x0.sgd"), _editor(), None)
+    assert line.startswith("Slot 3")
+    assert "BAK1Save2x0.sgd" in line
+    assert "Steam" in line
+    assert "243 challenges" in line
+
+
+def test_status_line_says_when_an_area_cannot_be_edited():
+    """A save that has never reached Arkham Knight HQ finishes 27 challenges
+    short. The CLI has always said so; the window said nothing at all."""
+    e = _editor(skip_regions=("HideOut",))
+    line = app.status_text(Path("BAK1Save2x0.sgd"), e, None)
+    assert "Arkham Knight HQ" in line
+
+
+def test_status_line_is_quiet_when_every_area_is_editable():
+    assert "not editable" not in app.status_text(Path("BAK1Save2x0.sgd"), _editor(), None)
+
+
+def test_status_line_still_warns_about_an_older_rotation():
+    line = app.status_text(Path("BAK1Save2x0.sgd"), _editor(),
+                           Path("BAK1Save2x1.sgd"))
+    assert "newest" in line
+    assert "BAK1Save2x1.sgd" in line
+
+
+def test_region_row_marks_the_area_the_editor_cannot_touch():
+    """The tree lists all six areas whether or not the save can hold them."""
+    untracked = {"HideOut"}
+    assert app.region_row_label("Arkham Knight HQ", "HideOut", untracked) != "Arkham Knight HQ"
+    assert "not editable" in app.region_row_label("Arkham Knight HQ", "HideOut", untracked)
+    assert app.region_row_label("Bleake Island", "CityZ", untracked) == "Bleake Island"
+
+
+# --- messages the window must not lose -------------------------------------
+# These paths need a Tk root to exercise, so they are asserted structurally,
+# the same way the theming test is. What they guard is not cosmetic: the GUI
+# used to be silent about both of these, and each silence looks exactly like
+# the tool being broken.
+
+
+def test_the_window_reports_an_area_it_could_not_edit():
+    """The CLI has always printed skipped_note. The window never mentioned
+    untracked regions anywhere — not the status line, not the tree, not the
+    log — so a mid-game save that finished at 215/243 gave the user a wrong
+    number and no explanation."""
+    import inspect
+
+    src = inspect.getsource(app)
+    assert "skipped_note" in src, "the skipped-area message has gone missing"
+    for method in (app.EditorApp.load, app.EditorApp.on_collect_all):
+        assert "skipped_note" in inspect.getsource(method), \
+            f"{method.__name__} no longer reports a skipped area"
+    assert "untracked" in inspect.getsource(app.status_text)
+    assert "untracked" in inspect.getsource(app.EditorApp.populate_tree)
+
+
+def test_the_window_says_where_the_collectible_it_left_behind_is():
+    """Leaving one uncollected is only useful if the user can find it, and the
+    tree cannot show it: the whole point is that it is NOT collected."""
+    import inspect
+
+    src = inspect.getsource(app.EditorApp.on_collect_all)
+    assert "where_to_find" in src
+    assert "left_behind" in src
+
+
+def test_the_window_never_prints_the_left_behind_trophys_index():
+    """THE NUMBERING TRAP: the save flag says Pickup_13, this tool's display
+    name says "Riddler Trophy 13", and IGN calls the same warehouse Bleake
+    Island trophy 6. Printing the number alongside a guide reference sends the
+    user to the wrong building."""
+    from aksave.editor import LEAVE_ONE_FLAG, where_to_find
+
+    note = where_to_find(LEAVE_ONE_FLAG, CAT)
+    assert CAT.item(LEAVE_ONE_FLAG).display not in note
+    assert app.TYPE_LABELS["Pickup"] + " 13" not in note
+
+
+def test_the_leave_one_label_says_where_without_saying_which_number():
+    """The checkbox is the last thing the user reads before clicking, and it
+    is the one control that decides whether the save ends at 242 or 243. It
+    should place the trophy without inviting a lookup by number."""
+    label = app.LEAVE_ONE_LABEL
+    assert "Bleake Island" in label
+    assert "achievement" in label
+    assert "13" not in label
+    assert len(label) < 130, "a tk.Checkbutton label does not wrap"
+
+
+# --- refusing a save the player can do something about ---------------------
+# Opening a clean new-game slot in the packaged build produced an error dialog
+# titled "Cannot read save" containing "no world-state store holding
+# collectibles was found". The save read fine, and the sentence was about our
+# parser. Both halves are now decided by a pure function.
+
+
+def test_an_explained_refusal_is_information_not_an_error():
+    from aksave.editor import NOTHING_COLLECTED
+    from aksave.editor import RailError as EditorRailError
+
+    kind, title, message = app.refusal_dialog(EditorRailError(NOTHING_COLLECTED))
+    assert kind == "info"
+    assert "cannot be edited" in title.lower()
+    assert message == NOTHING_COLLECTED
+    assert "read" not in title.lower(), "the save read perfectly well"
+
+
+def test_an_unrecognised_file_is_still_a_real_error():
+    from aksave.sgd import SgdError
+
+    kind, title, message = app.refusal_dialog(SgdError("unexpected size 1234"))
+    assert kind == "error"
+    assert "1234" in message
+
+
+def test_a_refusal_we_did_not_anticipate_says_so_rather_than_pretending():
+    kind, title, message = app.refusal_dialog(ValueError("boom"))
+    assert kind == "error"
+    assert "boom" in message
+
+
+def test_load_routes_both_kinds_through_that_one_decision():
+    import inspect
+
+    src = inspect.getsource(app.EditorApp.load)
+    assert "refusal_dialog" in src
+    assert "showinfo" in src and "showerror" in src
+
+
+# --- auto-detect must not open the one file the tool cannot edit -----------
+
+
+def test_autodetect_prefers_a_save_that_can_actually_be_edited(tmp_path):
+    """_best_candidate already prefers a complete slot, for the stated reason
+    that "auto-loading the one file the tool cannot edit reads as a bug rather
+    than as a rail doing its job". A brand-new save is the same case: it has
+    the newest playtime in a folder where an older save is the real one."""
+    def write(name, flags, playtime):
+        raw = bytearray(make_save_with_flags(flags))
+        struct.pack_into("<f", raw, 0x69, playtime)
+        p = tmp_path / name
+        p.write_bytes(bytes(raw))
+        os.utime(p, (1_700_000_000, 1_700_000_000))
+        return p
+
+    real = write("BAK1Save0x0.sgd", ALL[:40], 40_000.0)
+    write("BAK1Save1x1.sgd", [], 90_000.0)          # brand new, but "newest"
+
+    assert app.EditorApp._best_candidate(sorted(tmp_path.glob("*.sgd"))) == real
+
+
+# --- how a failed operation is reported ------------------------------------
+# Three confirmed findings share one cause. Activity logged "FAILED: <msg>"
+# and then the full traceback into a 9-line panel, which scrolled the only
+# actionable line out of view; no failure ever raised a dialog; and because
+# on_error=reload succeeded, the last line in the log read "Loaded <save>
+# (Steam, 51h08m, 215/243)" — a failed write signing off as a success.
+
+
+def test_a_rail_refusal_says_plainly_that_nothing_was_written():
+    from aksave.editor import NOTHING_COLLECTED
+    from aksave.editor import RailError as EditorRailError
+
+    kind, title, message, tb = app.failure_dialog(EditorRailError(NOTHING_COLLECTED))
+    assert kind == "info"
+    assert "nothing" in title.lower() or "not" in title.lower()
+    assert message == NOTHING_COLLECTED
+    assert tb is False, "a rail doing its job is not a crash"
+
+
+def test_the_game_running_refusal_is_a_refusal_not_a_crash():
+    kind, title, message, tb = app.failure_dialog(app.Refused("the game is running"))
+    assert kind == "info"
+    assert tb is False
+
+
+def test_a_locked_file_explains_itself_instead_of_showing_a_winerror():
+    """The most likely real failure: antivirus, OneDrive or Steam holding the
+    file. `[WinError 5] Access is denied` on its own tells a player nothing."""
+    kind, title, message, tb = app.failure_dialog(
+        PermissionError(13, "Access is denied"))
+    assert kind == "error"
+    assert "another program" in message or "read-only" in message
+    assert "backed up" in message, "the user needs to know their save is safe"
+
+
+def test_an_unexpected_bug_still_shows_its_traceback():
+    kind, title, message, tb = app.failure_dialog(KeyError("puzzle 99"))
+    assert kind == "error"
+    assert tb is True
+    assert "KeyError" in message
