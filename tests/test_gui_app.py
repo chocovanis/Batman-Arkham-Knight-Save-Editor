@@ -16,6 +16,7 @@ Skipped automatically where there is no display, so the suite still runs on a
 headless machine.
 """
 
+import gc
 import time
 
 import pytest
@@ -76,10 +77,12 @@ def root():
         pytest.skip(f"no Tk display available: {last}")
     r.withdraw()
     yield r
+    gc.collect()                # finalise Tk objects while Tcl is still up
     try:
         r.destroy()
     except tk.TclError:
         pass
+    gc.collect()
 
 
 @pytest.fixture
@@ -96,20 +99,47 @@ def slot(tmp_path):
 
 
 @pytest.fixture
-def gui(root, slot, monkeypatch):
+def make_app(root, monkeypatch):
+    """Build an EditorApp against a save folder, and dispose of it properly.
+
+    Disposal is not optional here. `EditorApp` holds `tk.StringVar` and
+    `tk.BooleanVar`, and `Variable.__del__` calls into Tcl. Left to chance,
+    those are collected whenever the next GC happens to run — which, in this
+    file, can be on a worker thread inside a LATER test, because the write
+    path runs off the UI thread. Tcl aborts the whole process when that
+    happens: `Windows fatal exception: code 0x80000003`, with the traceback
+    pointing at an innocent `json.loads` in `Catalog.load`.
+
+    So every app built here is finalised on the main thread, while its
+    interpreter is still alive, before the test ends.
+    """
     import ak_riddler_editor as mod
 
-    monkeypatch.setattr(mod, "find_save_dirs", lambda: [slot])
-    box = Recorder()
-    monkeypatch.setattr(mod, "messagebox", box)
-    app = mod.EditorApp(root)
-    app.box = box
-    app.slot_dir = slot
-    yield app
-    # Drop the Tk variables while the interpreter is still alive. Collected
-    # after root.destroy(), Variable.__del__ calls back into a dead Tcl and
-    # pytest reports it as an unraisable exception.
-    app.theme = app.leave_one = None
+    built = []
+
+    def build(slot_dir):
+        monkeypatch.setattr(mod, "find_save_dirs", lambda: [slot_dir])
+        box = Recorder()
+        monkeypatch.setattr(mod, "messagebox", box)
+        app = mod.EditorApp(root)
+        app.box = box
+        app.slot_dir = slot_dir
+        built.append(app)
+        return app
+
+    yield build
+
+    for app in built:
+        app.theme = app.leave_one = None
+        app.activity.on_failure = None
+        app.activity.buttons = []
+    built.clear()
+    gc.collect()
+
+
+@pytest.fixture
+def gui(make_app, slot):
+    return make_app(slot)
 
 
 def pump(app, timeout=20.0):
@@ -333,20 +363,16 @@ def test_a_mixed_selection_does_not_silently_drop_the_group_row(gui):
     assert len(flags) > len(loose) + 1
 
 
-def test_selecting_an_area_the_save_has_never_reached_explains_itself(root, tmp_path,
-                                                                     monkeypatch):
+def test_selecting_an_area_the_save_has_never_reached_explains_itself(make_app,
+                                                                     tmp_path):
     """It would be refused by `_check` anyway — but only after the click, as a
     RailError with a traceback in the log and no dialog."""
-    import ak_riddler_editor as mod
-
     d = tmp_path / "remote"
     d.mkdir()
     for name in ("BAK1Save0x0.sgd", "BAK1Save0x1.sgd", "BAK1Save0x2.sgd"):
         (d / name).write_bytes(make_save_with_flags(ALL[:40], skip_regions=("HideOut",)))
-    monkeypatch.setattr(mod, "find_save_dirs", lambda: [d])
-    box = Recorder()
-    monkeypatch.setattr(mod, "messagebox", box)
-    app = mod.EditorApp(root)
+    app = make_app(d)
+    box = app.box
 
     row = next(i for i in app.tree.get_children("")
                if "Arkham Knight HQ" in app.tree.item(i, "text"))
@@ -360,18 +386,13 @@ def test_selecting_an_area_the_save_has_never_reached_explains_itself(root, tmp_
     assert "Traceback" not in app.log_widget.get("1.0", "end")
 
 
-def test_a_leaf_in_an_unreachable_area_says_so_on_its_own_row(root, tmp_path,
-                                                             monkeypatch):
+def test_a_leaf_in_an_unreachable_area_says_so_on_its_own_row(make_app, tmp_path):
     """Once the region is expanded, its "(not editable)" parent is off screen."""
-    import ak_riddler_editor as mod
-
     d = tmp_path / "remote"
     d.mkdir()
     (d / "BAK1Save0x0.sgd").write_bytes(
         make_save_with_flags(ALL[:40], skip_regions=("HideOut",)))
-    monkeypatch.setattr(mod, "find_save_dirs", lambda: [d])
-    monkeypatch.setattr(mod, "messagebox", Recorder())
-    app = mod.EditorApp(root)
+    app = make_app(d)
 
     flag = next(i.flag for i in CAT.items if i.region == "HideOut")
     assert app.tree.item(flag, "values")[0] == "not editable"
