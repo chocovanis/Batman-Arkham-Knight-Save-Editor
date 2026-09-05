@@ -278,6 +278,7 @@ class Activity:
 import os
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from tkinter import filedialog, messagebox
 
@@ -337,6 +338,101 @@ LEAVE_ONE_LABEL = ("Leave one Bleake Island trophy uncollected, so the "
 
 class Refused(RuntimeError):
     """A rail declined to act. Nothing was written."""
+
+
+@dataclass(frozen=True)
+class SaveRow:
+    """One line in the save chooser."""
+    path: Path
+    slot: str
+    name: str
+    playtime: str
+    progress: str
+    current: bool
+    problem: str | None
+    ambiguous: bool = False
+
+
+def save_rows(paths, catalog) -> list[SaveRow]:
+    """Describe every save in a folder well enough to choose between them.
+
+    A raw file dialog shows `BAK1Save0x0.sgd` through `BAK1Save2x2.sgd` and
+    nothing else, which is not enough information to pick with: the slot
+    number is one digit in the middle of the name, the rotation the game
+    actually loads is not the alphabetically first one, and whether a save can
+    be edited at all cannot be seen from outside it. In the acceptance test
+    that produced an edit written to a file the game never read.
+
+    `current` is decided PER SLOT — every slot has its own newest rotation, so
+    marking only the highest playtime in the folder would leave every other
+    slot with nothing marked.
+
+    It is decided on PLAYTIME ALONE, and where several rotations tie on it
+    nothing is marked current: they are marked `ambiguous` instead. The
+    acceptance test proved this matters. Three rotations were installed with
+    identical playtime, the edit went to the one with the newest mtime, and
+    the game loaded a different one — so mtime is not the game's rule, and
+    breaking the tie on it names a file we have no reason to believe in.
+    Saying "we cannot tell" is the only honest answer, and it is the one that
+    tells the user to edit all of them.
+    """
+    rows: list[SaveRow] = []
+    seconds_by_path: dict[Path, float] = {}
+
+    for path in paths:
+        path = Path(path)
+        slot = slot_label(path)
+        problem = None
+        playtime = progress = "?"
+        try:
+            editor = SaveEditor(path.read_bytes(), catalog)
+            seconds = editor.playtime_seconds
+            seconds_by_path[path] = seconds
+            playtime = f"{int(seconds // 3600)}h{int(seconds % 3600 // 60):02d}m"
+            progress = f"{editor.challenge_count}/243"
+        except EditorRailError as exc:
+            problem = str(exc).split(".")[0] + "."
+        except Exception as exc:
+            problem = f"cannot be read: {exc}"
+        rows.append(SaveRow(path, slot, path.name, playtime, progress, False,
+                            problem))
+
+    # Second pass: the best playtime in each slot, and how many share it.
+    best: dict[str, float] = {}
+    for row in rows:
+        if row.path in seconds_by_path:
+            best[row.slot] = max(best.get(row.slot, float("-inf")),
+                                 seconds_by_path[row.path])
+    leaders: dict[str, int] = {}
+    for row in rows:
+        if seconds_by_path.get(row.path) == best.get(row.slot):
+            leaders[row.slot] = leaders.get(row.slot, 0) + 1
+
+    marked = []
+    for row in rows:
+        leads = (row.problem is None
+                 and seconds_by_path.get(row.path) == best.get(row.slot))
+        tied = leads and leaders.get(row.slot, 0) > 1
+        marked.append(SaveRow(row.path, row.slot, row.name, row.playtime,
+                              row.progress, leads and not tied, row.problem,
+                              tied))
+
+    marked.sort(key=lambda r: (r.slot, not (r.current or r.ambiguous), r.name))
+    return marked
+
+
+def save_row_text(row: SaveRow) -> str:
+    """One fixed-width line for the chooser list."""
+    if row.problem:
+        return f"{row.slot:<8} {row.name:<18}  -  {row.problem}"
+    if row.current:
+        tail = "   <- CURRENT, the game loads this one"
+    elif row.ambiguous:
+        tail = "   <- same playtime as its siblings; cannot tell which loads"
+    else:
+        tail = ""
+    return (f"{row.slot:<8} {row.name:<18} {row.playtime:>8} "
+            f"{row.progress:>8}{tail}")
 
 
 def failure_dialog(exc: BaseException) -> tuple[str, str, str, bool]:
@@ -441,7 +537,7 @@ def region_row_label(region_name: str, region: str, untracked: set) -> str:
     return region_name
 
 
-def status_text(path, editor, newest_rotation) -> str:
+def status_text(path, editor, newest_rotation, tied_rotations=()) -> str:
     """The one line the user reads to confirm we are pointed at the right save.
 
     Pure, so the wording can be checked without a display — the widget tests
@@ -465,6 +561,9 @@ def status_text(path, editor, newest_rotation) -> str:
     if newest_rotation is not None:
         line += ("  ·  not the newest rotation "
                  f"(the game loads {Path(newest_rotation).name})")
+    elif tied_rotations:
+        line += (f"  ·  {len(tied_rotations) + 1} rotations share this playtime "
+                 f"- cannot tell which one the game loads")
     return line
 
 
@@ -489,6 +588,8 @@ class EditorApp:
         # Set by load(): the newer sibling rotation the game would read instead,
         # or None when the opened file is the current one.
         self.newest_rotation: Path | None = None
+        # Siblings with identical playtime, when we cannot tell which is current.
+        self.tied_rotations: list[Path] = []
         self.theme = tk.StringVar(value="auto")
         self.leave_one = tk.BooleanVar(value=True)
 
@@ -952,6 +1053,45 @@ class EditorApp:
         if self.editor is None:
             messagebox.showinfo("No save", "Open a save file first.")
             return False
+        return self._confirm_rotation()
+
+    def _confirm_rotation(self) -> bool:
+        """Block a write to a rotation the game does not load.
+
+        This was a log line, and a log line loses. In the acceptance test the
+        warning was printed, the button stayed live, the user clicked twelve
+        seconds later, and the edit went to a file the game never read — which
+        looks exactly like the tool being broken.
+
+        Still only a confirmation, not a refusal: editing an older rotation on
+        purpose is legitimate, and the message says what will happen either
+        way.
+        """
+        if self.newest_rotation is None and self.tied_rotations:
+            names = ", ".join(p.name for p in self.tied_rotations)
+            return bool(messagebox.askyesno(
+                "This slot has rotations we cannot tell apart",
+                f"{self.save_path.name} has the same playtime as {names}, so "
+                f"there is no way to tell which one the game will load.\n\n"
+                f"If you edit only this one, the game may well load a "
+                f"different rotation and show no change at all.\n\n"
+                f"Edit all of them, one after another, to be sure — open each "
+                f"in turn and collect again.\n\n"
+                f"Go ahead with {self.save_path.name} now?"))
+        if self.newest_rotation is None:
+            return True
+        ok = messagebox.askyesno(
+            "That is not the rotation the game loads",
+            f"You have {self.save_path.name} open, but this slot's current "
+            f"rotation is {self.newest_rotation.name} — that is the one the "
+            f"game reads.\n\n"
+            f"Editing this file will most likely change nothing you can see in "
+            f"game.\n\n"
+            f"Open {self.newest_rotation.name} instead? Choose No to edit "
+            f"{self.save_path.name} anyway.")
+        if ok:
+            self.load(self.newest_rotation)
+            return False        # reopened; let the user click again
         return True
 
     @classmethod
@@ -1011,9 +1151,69 @@ class EditorApp:
         return desktop if desktop.is_dir() else Path.home()
 
     def on_open(self):
+        """Choose a save from a described list, not from a bare file dialog.
+
+        The file dialog listed BAK1Save0x0 through 2x2 and nothing else, which
+        is not enough to choose with: the slot is one digit mid-filename and
+        the rotation the game loads is not the first one alphabetically. In
+        testing that produced an edit written to a file the game never read.
+        """
+        folder = self._open_dialog_dir()
+        rows = save_rows(sorted(Path(folder).glob("BAK1Save*.sgd")), self.catalog)
+        if not rows:
+            self._browse_for_save(folder)
+            return
+
+        win = tk.Toplevel(self.root)
+        win.title("Open a save")
+        ttk.Label(win, text=f"Saves in {folder}",
+                  style="Muted.TLabel").pack(anchor="w", padx=14, pady=(14, 6))
+        lst = tk.Listbox(win, width=76, height=min(12, max(4, len(rows))),
+                         exportselection=0,
+                         font=(MONO_FONT, round(MONO_PT * self.ui_scale)))
+        for row in rows:
+            lst.insert("end", save_row_text(row))
+        # Preselect the one we would have opened anyway, so the safe choice is
+        # the default and the user has to work to pick a worse one.
+        default = next((i for i, r in enumerate(rows)
+                        if r.path == self.save_path), None)
+        if default is None:
+            default = next((i for i, r in enumerate(rows)
+                            if r.current and not r.problem), 0)
+        lst.selection_set(default)
+        lst.see(default)
+        lst.pack(padx=14, pady=(0, 10), fill="both", expand=True)
+
+        def choose(_event=None):
+            sel = lst.curselection()
+            if not sel:
+                messagebox.showinfo("Nothing chosen",
+                                    "Select a save from the list first.",
+                                    parent=win)
+                return
+            row = rows[sel[0]]
+            if row.problem:
+                messagebox.showinfo("Cannot open that save", row.problem,
+                                    parent=win)
+                return
+            win.destroy()
+            self.load(row.path)
+
+        lst.bind("<Double-Button-1>", choose)
+        buttons = ttk.Frame(win)
+        buttons.pack(fill="x", padx=14, pady=(0, 14))
+        ttk.Button(buttons, text="Open", style="Accent.TButton",
+                   command=choose).pack(side="left")
+        ttk.Button(buttons, text="Browse…",
+                   command=lambda: (win.destroy(),
+                                    self._browse_for_save(folder))).pack(side="left",
+                                                                         padx=(8, 0))
+
+    def _browse_for_save(self, folder):
+        """The escape hatch, for a save that is not in the detected folder."""
         path = filedialog.askopenfilename(
             title="Open Arkham Knight save",
-            initialdir=str(self._open_dialog_dir()),
+            initialdir=str(folder),
             filetypes=[("Arkham Knight saves", "BAK1Save*.sgd"),
                        ("All files", "*.*")])
         if path:
@@ -1041,6 +1241,32 @@ class EditorApp:
             playtime = -1.0
         return (playtime, Path(path).stat().st_mtime)
 
+    @staticmethod
+    def _rotation_ties(path: Path) -> list[Path]:
+        """Sibling rotations with exactly this save's playtime.
+
+        Playtime is the only signal we trust for which rotation is current,
+        and when it ties there is nothing left to go on: the acceptance test
+        installed three rotations with identical playtime, the edit went to
+        the one with the newest mtime, and the game loaded a different one.
+        Rather than guess, name the siblings so the user can edit them too.
+        """
+        try:
+            here = Path(path).resolve()
+            mine = SgdFile(Path(path).read_bytes()).playtime_seconds
+            out = []
+            for sibling in slot_files(path):
+                if sibling.resolve() == here:
+                    continue
+                try:
+                    if SgdFile(sibling.read_bytes()).playtime_seconds == mine:
+                        out.append(sibling)
+                except Exception:
+                    continue
+            return sorted(out)
+        except Exception:
+            return []
+
     def _newer_rotation(self, path: Path):
         """Return the newer sibling rotation the game would load instead, if any.
 
@@ -1060,8 +1286,14 @@ class EditorApp:
                 return None
             # A tie means we genuinely cannot tell the two apart, so warning
             # would be presenting a guess as a fact. Stay quiet instead.
+            #
+            # Compared on PLAYTIME only. The full rank falls back to mtime,
+            # and the acceptance test showed mtime is not the game's rule:
+            # of three rotations with identical playtime the game loaded one
+            # that was not the most recently written. `rotation_ties` reports
+            # that case separately, in the words it deserves.
             mine = next((r for p, r in ranked.items() if p.resolve() == here), None)
-            if mine is not None and ranked[newest] == mine:
+            if mine is not None and ranked[newest][0] == mine[0]:
                 return None
         except Exception:
             return None
@@ -1084,6 +1316,7 @@ class EditorApp:
             return False
         self.editor, self.save_path = editor, path
         self.newest_rotation = self._newer_rotation(path)
+        self.tied_rotations = self._rotation_ties(path) if not self.newest_rotation else []
         self.refresh()
         h = int(self.editor.playtime_seconds // 3600)
         m = int(self.editor.playtime_seconds % 3600 // 60)
@@ -1130,6 +1363,7 @@ class EditorApp:
         self.editor = None
         self.save_path = None
         self.newest_rotation = None
+        self.tied_rotations = []
         self.status.configure(text="No save loaded")
         self.tree.delete(*self.tree.get_children())
         self.activity.log(
@@ -1141,7 +1375,8 @@ class EditorApp:
         if not self.editor:
             return
         self.status.configure(
-            text=status_text(self.save_path, self.editor, self.newest_rotation))
+            text=status_text(self.save_path, self.editor, self.newest_rotation,
+                             self.tied_rotations))
         self.populate_tree()
 
     def on_theme(self, _event=None):

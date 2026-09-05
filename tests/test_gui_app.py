@@ -32,14 +32,21 @@ ALL = [i.flag for i in CAT.items]
 
 
 class Recorder:
-    """Stands in for tkinter.messagebox so nothing blocks on a modal."""
+    """Stands in for tkinter.messagebox so nothing blocks on a modal.
 
-    def __init__(self):
+    `answers` supplies the return value per dialog kind, so a test can decide
+    what the user clicked. Anything unset returns None, which is falsy - the
+    same as clicking No.
+    """
+
+    def __init__(self, answers=None):
         self.calls = []
+        self.answers = dict(answers or {})
 
     def _record(self, kind):
         def show(title, message, **kw):
             self.calls.append((kind, title, message))
+            return self.answers.get(kind)
         return show
 
     def __getattr__(self, name):
@@ -87,12 +94,23 @@ def root():
 
 @pytest.fixture
 def slot(tmp_path):
-    """A save folder shaped like the real one: three rotations plus the two
-    files the editor must never write."""
+    """A save folder shaped like a real one.
+
+    Three rotations with DISTINCT playtimes, because that is what the game
+    writes: it plays on and saves again, so each rotation is further along
+    than the last. Equal playtimes are the pathological case and get their
+    own fixture (`tied`) — building the ordinary fixture that way meant every
+    test here was unknowingly exercising the ambiguous path.
+    """
+    import struct
     d = tmp_path / "remote"
     d.mkdir()
-    for name in ("BAK1Save0x0.sgd", "BAK1Save0x1.sgd", "BAK1Save0x2.sgd"):
-        (d / name).write_bytes(make_save_with_flags(ALL[:40]))
+    for name, playtime in (("BAK1Save0x0.sgd", 90_000.0),      # current
+                           ("BAK1Save0x1.sgd", 80_000.0),
+                           ("BAK1Save0x2.sgd", 70_000.0)):
+        raw = bytearray(make_save_with_flags(ALL[:40]))
+        struct.pack_into("<f", raw, 0x69, playtime)
+        (d / name).write_bytes(bytes(raw))
     (d / "profile.bin").write_bytes(b"profile-original")
     (d / "LBGameCache.dat").write_bytes(b"cache-original")
     return d
@@ -255,17 +273,29 @@ def test_after_that_failure_nothing_can_be_written(gui, monkeypatch):
             raise OSError("the file was locked")
         return real_replace(*a, **kw)
 
+    from aksave.editor import SaveEditor
+
     original = (gui.slot_dir / "BAK1Save0x0.sgd").read_bytes()
     monkeypatch.setattr(mod.os, "replace", flaky)
 
     gui.on_collect_all()
     pump(gui)
-    assert (gui.slot_dir / "BAK1Save0x0.sgd").read_bytes() == original
 
-    gui.on_collect_all()            # the click that used to commit the edit
+    # Nothing reached disk, and - the part that used to be false - memory is
+    # not left ahead of it. That gap was the whole defect: the in-memory
+    # editor held 242/243 while the file held 40/243, so a later click on one
+    # trophy added nothing, logged "Adding 0 flags", and serialised the lot.
+    on_disk = gui.slot_dir / "BAK1Save0x0.sgd"
+    assert on_disk.read_bytes() == original
+    assert gui.editor.challenge_count == \
+        SaveEditor(on_disk.read_bytes(), CAT).challenge_count, \
+        "the in-memory editor is ahead of the file it would be written to"
+
+    # A retry is now ordinary work, reported honestly, not a stale commit.
+    gui.on_collect_all()
     pump(gui)
-    assert (gui.slot_dir / "BAK1Save0x0.sgd").read_bytes() == original, \
-        "an abandoned in-memory edit was committed by a later click"
+    assert "Adding 0 flags" not in log_text(gui)
+    assert SaveEditor(on_disk.read_bytes(), CAT).challenge_count == 242
 
 
 # --- restore ---------------------------------------------------------------
@@ -367,10 +397,15 @@ def test_selecting_an_area_the_save_has_never_reached_explains_itself(make_app,
                                                                      tmp_path):
     """It would be refused by `_check` anyway — but only after the click, as a
     RailError with a traceback in the log and no dialog."""
+    import struct
     d = tmp_path / "remote"
     d.mkdir()
-    for name in ("BAK1Save0x0.sgd", "BAK1Save0x1.sgd", "BAK1Save0x2.sgd"):
-        (d / name).write_bytes(make_save_with_flags(ALL[:40], skip_regions=("HideOut",)))
+    for name, playtime in (("BAK1Save0x0.sgd", 90_000.0),
+                           ("BAK1Save0x1.sgd", 80_000.0),
+                           ("BAK1Save0x2.sgd", 70_000.0)):
+        raw = bytearray(make_save_with_flags(ALL[:40], skip_regions=("HideOut",)))
+        struct.pack_into("<f", raw, 0x69, playtime)
+        (d / name).write_bytes(bytes(raw))
     app = make_app(d)
     box = app.box
 
@@ -420,3 +455,134 @@ def test_a_failed_write_raises_a_dialog_and_does_not_sign_off_as_a_success(gui,
     assert kind == "showinfo", "a rail refusing is not a crash"
     assert "running" in message
     assert "Traceback" not in log_text(gui)
+
+
+# --- the rotation trap, found by the acceptance test -----------------------
+# The tool warned that BAK1Save2x0.sgd was not the rotation the game loads,
+# then left the button live. The click came twelve seconds later, the edit
+# landed on a file the game never read, and the result looked exactly like
+# the tool being broken.
+
+
+@pytest.fixture
+def stale(tmp_path):
+    """A slot whose current rotation is NOT the one sorted first."""
+    import struct
+    d = tmp_path / "remote"
+    d.mkdir()
+    for name, playtime in (("BAK1Save0x0.sgd", 40_000.0),      # oldest
+                           ("BAK1Save0x1.sgd", 50_000.0),
+                           ("BAK1Save0x2.sgd", 90_000.0)):     # current
+        raw = bytearray(make_save_with_flags(ALL[:40]))
+        struct.pack_into("<f", raw, 0x69, playtime)
+        (d / name).write_bytes(bytes(raw))
+    return d
+
+
+def test_editing_a_stale_rotation_asks_before_writing_anything(make_app, stale):
+    app = make_app(stale)
+    app.box.answers["askyesno"] = True          # "yes, open the current one"
+    before = (stale / "BAK1Save0x0.sgd").read_bytes()
+
+    app.load(stale / "BAK1Save0x0.sgd")
+    app.on_collect_all()
+    pump(app)
+
+    assert any(k == "askyesno" for k, _, _ in app.box.calls), \
+        "the write went ahead with only a log line to object"
+    assert (stale / "BAK1Save0x0.sgd").read_bytes() == before
+    assert app.save_path.name == "BAK1Save0x2.sgd", \
+        "answering yes should leave the current rotation open"
+
+
+def test_the_confirmation_names_both_files_so_the_choice_is_obvious(make_app, stale):
+    app = make_app(stale)
+    app.load(stale / "BAK1Save0x0.sgd")
+    app.on_collect_all()
+    pump(app)
+
+    message = next(m for k, _, m in app.box.calls if k == "askyesno")
+    assert "BAK1Save0x0.sgd" in message
+    assert "BAK1Save0x2.sgd" in message
+
+
+def test_editing_a_stale_rotation_on_purpose_is_still_allowed(make_app, stale):
+    """A refusal would be wrong: editing an older rotation deliberately is
+    legitimate, and the tool should not know better than the user."""
+    app = make_app(stale)
+    app.box.answers["askyesno"] = False         # "no, edit this one anyway"
+    before = (stale / "BAK1Save0x0.sgd").read_bytes()
+
+    app.load(stale / "BAK1Save0x0.sgd")
+    app.on_collect_all()
+    pump(app)
+
+    assert (stale / "BAK1Save0x0.sgd").read_bytes() != before
+    assert app.save_path.name == "BAK1Save0x0.sgd"
+
+
+def test_opening_the_current_rotation_asks_nothing(make_app, stale):
+    app = make_app(stale)
+    app.load(stale / "BAK1Save0x2.sgd")
+    app.on_collect_all()
+    pump(app)
+
+    assert not any(k == "askyesno" for k, _, _ in app.box.calls)
+    from aksave.editor import SaveEditor
+    assert SaveEditor((stale / "BAK1Save0x2.sgd").read_bytes(),
+                      CAT).challenge_count == 242
+
+
+@pytest.fixture
+def tied(tmp_path):
+    """Three rotations with identical playtime — your slot 3 after install."""
+    import struct
+    d = tmp_path / "remote"
+    d.mkdir()
+    for name in ("BAK1Save2x0.sgd", "BAK1Save2x1.sgd", "BAK1Save2x2.sgd"):
+        raw = bytearray(make_save_with_flags(ALL[:40]))
+        struct.pack_into("<f", raw, 0x69, 71786.0)
+        (d / name).write_bytes(bytes(raw))
+    return d
+
+
+def test_identical_rotations_warn_that_we_cannot_tell_which_one_loads(make_app, tied):
+    """The acceptance-test failure, encoded.
+
+    Three rotations, same playtime, edit written to one of them, game loaded
+    another. Ranking on mtime named a file we had no reason to believe in, so
+    now nothing is named and the user is told to edit all of them.
+    """
+    app = make_app(tied)
+    app.box.answers["askyesno"] = False        # "no, go ahead anyway"
+    app.load(tied / "BAK1Save2x0.sgd")
+    app.on_collect_all()
+    pump(app)
+
+    asked = [m for k, _, m in app.box.calls if k == "askyesno"]
+    assert asked, "a tie has to be raised before the write, not after"
+    assert "same playtime" in asked[0].lower()
+    assert "all" in asked[0].lower()
+    assert "BAK1Save2x1.sgd" in asked[0] and "BAK1Save2x2.sgd" in asked[0]
+
+
+def test_a_tie_does_not_falsely_name_one_rotation_as_newest(make_app, tied):
+    """The old warning said "open BAK1Save2x2.sgd instead", picked by mtime.
+    That was a guess presented as a fact, and it was wrong."""
+    app = make_app(tied)
+    app.load(tied / "BAK1Save2x0.sgd")
+    assert app.newest_rotation is None
+    assert "not the newest rotation" not in log_text(app)
+
+
+def test_the_status_line_shows_the_tie(make_app, tied):
+    app = make_app(tied)
+    app.load(tied / "BAK1Save2x0.sgd")
+    assert "cannot tell" in app.status.cget("text").lower()
+
+
+def test_distinct_playtimes_still_produce_the_ordinary_warning(make_app, stale):
+    app = make_app(stale)
+    app.load(stale / "BAK1Save0x0.sgd")
+    assert app.newest_rotation is not None
+    assert not app.tied_rotations

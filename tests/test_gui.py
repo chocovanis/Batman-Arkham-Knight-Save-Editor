@@ -401,3 +401,155 @@ def test_an_unexpected_bug_still_shows_its_traceback():
     assert kind == "error"
     assert tb is True
     assert "KeyError" in message
+
+
+# --- choosing which save to open -------------------------------------------
+# The acceptance test found this the hard way. "Open Save…" was a raw file
+# dialog listing BAK1Save0x0 / 0x1 / 0x2 / 1x1 / 2x0 / 2x1 / 2x2 with nothing
+# to say which was which, the user picked a rotation the game does not load,
+# and the only objection was a log line that scrolled past while the button
+# stayed live. The edit landed on a file the game never read.
+
+
+def _folder(tmp_path, spec):
+    """spec: {filename: (flags, playtime)}"""
+    import struct
+    for name, (flags, playtime) in spec.items():
+        raw = bytearray(make_save_with_flags(flags))
+        struct.pack_into("<f", raw, 0x69, playtime)
+        (tmp_path / name).write_bytes(bytes(raw))
+    return sorted(tmp_path.glob("BAK1Save*.sgd"))
+
+
+def test_every_save_is_described_by_slot_playtime_and_progress(tmp_path):
+    from aksave.catalog import Catalog
+    paths = _folder(tmp_path, {
+        "BAK1Save0x0.sgd": (ALL[:40], 184101.0),
+        "BAK1Save2x0.sgd": (ALL[:20], 71786.0),
+    })
+    rows = app.save_rows(paths, Catalog.load())
+    assert [r.slot for r in rows] == ["Slot 1", "Slot 3"]
+    assert rows[0].playtime == "51h08m"
+    assert "243" in rows[0].progress
+    assert all(r.name.startswith("BAK1Save") for r in rows)
+
+
+def test_the_rotation_the_game_loads_is_marked_and_the_others_are_not(tmp_path):
+    from aksave.catalog import Catalog
+    paths = _folder(tmp_path, {
+        "BAK1Save0x0.sgd": (ALL[:40], 184101.0),   # most playtime -> current
+        "BAK1Save0x1.sgd": (ALL[:40], 183754.0),
+        "BAK1Save0x2.sgd": (ALL[:40], 172036.0),
+    })
+    rows = app.save_rows(paths, Catalog.load())
+    assert [r.current for r in rows] == [True, False, False]
+    assert "BAK1Save0x0.sgd" in app.save_row_text(rows[0])
+    assert "current" in app.save_row_text(rows[0]).lower()
+    assert "current" not in app.save_row_text(rows[1]).lower()
+
+
+def test_current_is_decided_per_slot_not_across_the_whole_folder(tmp_path):
+    """Every slot has its own current rotation. Marking only the highest
+    playtime in the folder would leave slot 3 with nothing marked at all."""
+    from aksave.catalog import Catalog
+    paths = _folder(tmp_path, {
+        "BAK1Save0x0.sgd": (ALL[:40], 184101.0),
+        "BAK1Save2x0.sgd": (ALL[:20], 71786.0),
+        "BAK1Save2x1.sgd": (ALL[:20], 71000.0),
+    })
+    by_name = {r.name: r for r in app.save_rows(paths, Catalog.load())}
+    assert by_name["BAK1Save0x0.sgd"].current
+    assert by_name["BAK1Save2x0.sgd"].current
+    assert not by_name["BAK1Save2x1.sgd"].current
+
+
+def test_a_save_that_cannot_be_edited_says_so_in_the_list(tmp_path):
+    """Better to see "no collectibles yet" on the row than to pick it and get
+    a dialog."""
+    from aksave.catalog import Catalog
+    paths = _folder(tmp_path, {
+        "BAK1Save0x0.sgd": (ALL[:40], 184101.0),
+        "BAK1Save1x1.sgd": ([], 15.0),
+    })
+    rows = {r.name: r for r in app.save_rows(paths, Catalog.load())}
+    assert rows["BAK1Save0x0.sgd"].problem is None
+    assert rows["BAK1Save1x1.sgd"].problem
+    assert "collectible" in app.save_row_text(rows["BAK1Save1x1.sgd"]).lower()
+
+
+def test_an_unreadable_file_is_listed_rather_than_dropped(tmp_path):
+    """Dropping it silently would leave the user hunting for a file they can
+    see in Explorer."""
+    from aksave.catalog import Catalog
+    _folder(tmp_path, {"BAK1Save0x0.sgd": (ALL[:40], 184101.0)})
+    (tmp_path / "BAK1Save0x1.sgd").write_bytes(b"not a save")
+    rows = {r.name: r for r in app.save_rows(sorted(tmp_path.glob("BAK1Save*.sgd")),
+                                             Catalog.load())}
+    assert rows["BAK1Save0x1.sgd"].problem
+    assert not rows["BAK1Save0x1.sgd"].current
+
+
+def test_rows_are_ordered_by_slot_then_by_how_current_they_are(tmp_path):
+    from aksave.catalog import Catalog
+    paths = _folder(tmp_path, {
+        "BAK1Save2x0.sgd": (ALL[:20], 71000.0),
+        "BAK1Save2x1.sgd": (ALL[:20], 71786.0),
+        "BAK1Save0x0.sgd": (ALL[:40], 184101.0),
+    })
+    rows = app.save_rows(paths, Catalog.load())
+    assert [r.name for r in rows] == ["BAK1Save0x0.sgd", "BAK1Save2x1.sgd",
+                                      "BAK1Save2x0.sgd"]
+
+
+# --- rotations we genuinely cannot tell apart ------------------------------
+# Evidence from the acceptance test: three rotations installed with identical
+# playtime, the edit written to the one with the newest mtime, and the game
+# loaded a different one. So mtime is NOT the game's rule, and ranking on it
+# presents a guess as a fact. Where playtime ties, say so.
+
+
+def test_no_rotation_is_called_current_when_the_playtimes_tie(tmp_path):
+    from aksave.catalog import Catalog
+    paths = _folder(tmp_path, {
+        "BAK1Save2x0.sgd": (ALL[:20], 71786.0),
+        "BAK1Save2x1.sgd": (ALL[:20], 71786.0),
+        "BAK1Save2x2.sgd": (ALL[:20], 71786.0),
+    })
+    rows = app.save_rows(paths, Catalog.load())
+    assert not any(r.current for r in rows), \
+        "mtime broke the tie and named a file the game does not load"
+    assert all(r.ambiguous for r in rows)
+    assert "cannot tell" in app.save_row_text(rows[0]).lower()
+
+
+def test_a_clear_winner_is_still_marked_current(tmp_path):
+    from aksave.catalog import Catalog
+    paths = _folder(tmp_path, {
+        "BAK1Save2x0.sgd": (ALL[:20], 71786.0),
+        "BAK1Save2x1.sgd": (ALL[:20], 90000.0),
+    })
+    rows = {r.name: r for r in app.save_rows(paths, Catalog.load())}
+    assert rows["BAK1Save2x1.sgd"].current
+    assert not rows["BAK1Save2x1.sgd"].ambiguous
+    assert not rows["BAK1Save2x0.sgd"].current
+
+
+def test_only_the_tied_leaders_are_ambiguous(tmp_path):
+    """A rotation that is plainly behind is not ambiguous, it is just old."""
+    from aksave.catalog import Catalog
+    paths = _folder(tmp_path, {
+        "BAK1Save2x0.sgd": (ALL[:20], 90000.0),
+        "BAK1Save2x1.sgd": (ALL[:20], 90000.0),
+        "BAK1Save2x2.sgd": (ALL[:20], 10000.0),
+    })
+    rows = {r.name: r for r in app.save_rows(paths, Catalog.load())}
+    assert rows["BAK1Save2x0.sgd"].ambiguous
+    assert rows["BAK1Save2x1.sgd"].ambiguous
+    assert not rows["BAK1Save2x2.sgd"].ambiguous
+
+
+def test_a_lone_rotation_is_neither_ambiguous_nor_unmarked(tmp_path):
+    from aksave.catalog import Catalog
+    paths = _folder(tmp_path, {"BAK1Save1x1.sgd": (ALL[:20], 71786.0)})
+    row = app.save_rows(paths, Catalog.load())[0]
+    assert row.current and not row.ambiguous
