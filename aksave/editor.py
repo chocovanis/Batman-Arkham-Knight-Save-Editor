@@ -28,7 +28,79 @@ FORBIDDEN_SUBSTRINGS = ("_Percentage_Added", "_Trial", "CaseClosed")
 
 # Which region to leave the last collectible in, most reachable first. Bleake
 # Island is where the game starts and the only region every save can get to.
+# This is now only the fallback; LEAVE_ONE_FLAG below is tried first.
 LEAVE_ONE_REGIONS = ("CityZ", "CityX", "CityY", "Stagg", "Film", "HideOut")
+
+# The one collectible `leave_one` holds back, chosen rather than ranked.
+#
+# This project verified exactly one location-to-flag mapping, and it verified it
+# the only way that works: the player picked the trophy up and we read the flag
+# the game wrote (captures/004). Everything else is a guess, and the whole point
+# of leaving a collectible behind is that the user can go and find it — so the
+# one we can describe is the one we leave.
+LEAVE_ONE_FLAG = "PickedUp_CityZ_Pickup_13"
+
+# BEWARE THE NUMBERING. Three schemes name this single object: the save flag
+# says Pickup_13, this tool's own display name says "Riddler Trophy 13", and
+# IGN's guide calls it Bleake Island trophy 6. Telling a user "trophy 13" and
+# then pointing them at IGN sends them to the wrong building — the exact
+# confound that cost three in-game attempts in session 6. So the description
+# leads with the place and never prints the index.
+#
+# Kept to plain ASCII on purpose. The CLI prints it, and a Windows console runs
+# in the active code page rather than UTF-8, where print() raises
+# UnicodeEncodeError on anything the page has no room for. An em-dash here came
+# back as a replacement character the first time this was run for real.
+LEAVE_ONE_LOCATION = (
+    "a Riddler Trophy on Bleake Island, in the warehouse across the bridge "
+    "from Ace Chemicals. Hit the ? switch with the up arrow to raise the "
+    "containers, then grab the trophy. Armed Riddler drones spawn; a Remote "
+    "Batarang through the ? with the down arrow crushes them. "
+    "IGN's Bleake Island guide numbers this one trophy 6.")
+
+
+def skipped_note(editor: "SaveEditor") -> str | None:
+    """What to say about areas this save has no Riddler records for yet.
+
+    Shared by the CLI and the GUI on purpose. This is the one refusal an
+    ordinary player is actually likely to meet — a save that has not reached
+    Arkham Knight HQ finishes at 216/243 and needs to be told why — so both
+    surfaces have to say the same thing, in words that name the fix.
+
+    Returns None when there is nothing to report. Plain ASCII: the CLI prints
+    it, and a Windows console runs in the active code page, not UTF-8.
+    """
+    if not editor.untracked_regions:
+        return None
+    names = ", ".join(sorted(editor.catalog.region_name(r)
+                             for r in editor.untracked_regions))
+    return (f"SKIPPED {names}: this save has no Riddler records for that area "
+            f"yet, so its challenges cannot be set and the total stops short. "
+            f"Visit it once in game, save, and run this again to finish the "
+            f"set.")
+
+
+def where_to_find(flag: str, catalog: Catalog) -> str:
+    """Tell the user where the collectible we left behind actually is.
+
+    Only LEAVE_ONE_FLAG has a location we can stand behind. For anything else
+    — which only happens when the user already has that trophy — the honest
+    answer is its name plus the escape hatch, because the game does not
+    necessarily mark an uncollected collectible on the map.
+    """
+    if flag == LEAVE_ONE_FLAG:
+        return LEAVE_ONE_LOCATION
+    name = catalog.item(flag).display if catalog.known(flag) else flag
+    return (f"{name}. The game will not necessarily mark it on your map, so if "
+            f"you cannot find it, turn \"leave one\" off and run again.")
+
+
+# Plain ASCII, like everything else a surface may print. See skipped_note.
+NOTHING_COLLECTED = (
+    "This save has no Riddler collectibles in it yet, so there is nothing here "
+    "for the editor to work with. The game does not start keeping Riddler "
+    "records until you have picked one up. Collect a single Riddler Trophy "
+    "anywhere in the city, save the game, and open that save instead.")
 
 
 class RailError(Exception):
@@ -39,11 +111,31 @@ class SaveEditor:
     def __init__(self, raw: bytes, catalog: Catalog | None = None):
         self.catalog = catalog or Catalog.load()
         self.save = SgdFile(raw)
+        self.save.validate()
+        self._flags = self.save.read_flags()
+
+        # Checked here, ahead of validate_writable(), purely so the player gets
+        # a sentence about their game instead of one about our parser.
+        #
+        # The tool finds the world-state store by looking for a PickedUp_ key
+        # inside it, so a save holding none is unidentifiable and
+        # `read_stores()` refuses it with "no world-state store holding
+        # collectibles was found" — which, in a dialog titled "Cannot read
+        # save", tells a player nothing true: the save read perfectly.
+        #
+        # Six corpus saves are in this state, and they are not all brand-new
+        # games. One is an hour in with 143 flags and not a single PickedUp_,
+        # so the condition is "nothing collected", not "nothing played".
+        if not any(f.startswith("PickedUp_") for f in self._flags):
+            raise RailError(NOTHING_COLLECTED)
+
         # Not plain validate(): a save whose caches we cannot locate is one we
         # would silently half-edit, which is precisely the failure that made
         # the first in-game test load fine and show the old progress.
         self.save.validate_writable()
-        self._flags = self.save.read_flags()
+        # Set by collect_all(leave_one=True): the collectible the user has to
+        # pick up themselves. The callers have to be able to name it.
+        self.left_behind: str | None = None
 
     @property
     def flags(self) -> list[str]:
@@ -233,11 +325,17 @@ class SaveEditor:
         """
         tracked = self.tracked_regions
         wanted = [i.flag for i in self.catalog.items if i.region in tracked]
+        self.left_behind = None
         if leave_one:
             remaining = [f for f in wanted if f not in self.collected]
             if len(remaining) <= 1:
+                # Already where leave_one wants to be. Still report what is
+                # outstanding: a re-run that says nothing reads as the tool
+                # having forgotten the collectible it asked the user to find.
+                self.left_behind = remaining[0] if remaining else None
                 return []
-            wanted = [f for f in wanted if f != self.leave_out(remaining)]
+            self.left_behind = self.leave_out(remaining)
+            wanted = [f for f in wanted if f != self.left_behind]
         return self.collect(wanted)
 
     @staticmethod
@@ -245,12 +343,22 @@ class SaveEditor:
         """Choose the one collectible the player will pick up themselves.
 
         This is the single thing the user has to do in game for the achievement
-        to fire, so it has to be findable. Taking the last entry in manifest
-        order chose "Riddle 2 — Stagg Airships": a riddle needs you to know
-        where to stand and what to scan, and Stagg is not somewhere you can
-        walk to early. Prefer a plain trophy, and prefer Bleake Island, which
-        is the first island and the one every save can reach.
+        to fire, so it has to be findable. LEAVE_ONE_FLAG is the only
+        collectible whose physical location this project actually verified, so
+        it wins outright whenever the save has not already got it.
+
+        The ranking below is the fallback for when it has. It must return
+        something: if `leave_out` ever came back empty-handed,
+        `collect_all(leave_one=True)` would quietly become a full collect and
+        the achievement it exists to protect would never fire. Taking the last
+        entry in manifest order chose "Riddle 2 — Stagg Airships": a riddle
+        needs you to know where to stand and what to scan, and Stagg is not
+        somewhere you can walk to early. Prefer a plain trophy, and prefer
+        Bleake Island, which is the first island and the one every save reaches.
         """
+        if LEAVE_ONE_FLAG in remaining:
+            return LEAVE_ONE_FLAG
+
         def rank(flag: str) -> tuple:
             _, region, type_ = flag.split("_")[:3]
             region_rank = (LEAVE_ONE_REGIONS.index(region)

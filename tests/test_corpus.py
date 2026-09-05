@@ -65,10 +65,24 @@ def test_appending_reproduces_a_real_save_transition():
     before.validate()
 
 
+EXCLUDED_DIRS = ("proof", "captures")
+
+
 def all_saves():
-    """Every real save in the corpus, excluding our own generated proofs."""
+    """Every real save in the corpus, excluding anything we produced.
+
+    `proof/` holds our own builds. `captures/` holds saves the *game* wrote on
+    top of an edited save — kept as evidence, but not corpus: they descend from
+    our output, so asserting genuine-save invariants over them would be circular.
+
+    One of them is also legitimately inconsistent.
+    `captures/004_.../BAK1Save2x0.sgd` is a rotation the game wrote at the moment
+    of a pickup, and it carries the cached counter `207/243` while its flag array
+    still holds only 206 — so the game's own save path can leave those two out of
+    step. Our writer never produces that state because it updates both.
+    """
     for path in sorted(Path(CORPUS).rglob("*.sgd")):
-        if "proof" not in path.parts:
+        if not any(d in path.parts for d in EXCLUDED_DIRS):
             yield path
 
 
@@ -300,3 +314,40 @@ def test_collecting_riddles_fills_the_riddle_array():
     _, values = editor.save.read_riddle_array()
     assert {i for i, v in enumerate(values) if v} == set(range(1, 41))
     assert values[0] == 0 and all(v == 0 for v in values[41:])
+
+
+def test_the_only_saves_the_editor_refuses_are_the_ones_with_nothing_collected():
+    """Pins the refusal message to a fact about the player's game.
+
+    Six of the sixty corpus saves cannot be edited, and every one of them holds
+    zero `PickedUp_` collectibles: three are brand-new games, and three are an
+    hour in with 143 story flags and not one collectible. Every save holding at
+    least one collectible is editable. That equivalence is what lets the tool
+    say "collect one and come back" rather than naming a parser structure.
+    """
+    from aksave.editor import NOTHING_COLLECTED, RailError, SaveEditor
+    from aksave.sgd import SgdError
+
+    refused, accepted = [], []
+    for path in all_saves():
+        raw = path.read_bytes()
+        empty = not any(f.startswith("PickedUp_")
+                        for f in SgdFile(raw).read_flags())
+        try:
+            SaveEditor(raw)
+            accepted.append((path, empty))
+        except RailError as exc:
+            assert str(exc) == NOTHING_COLLECTED, f"{path}: {exc}"
+            refused.append((path, empty))
+        except SgdError as exc:                      # a different refusal
+            refused.append((path, empty))
+            assert not empty, (
+                f"{path} holds nothing and should have been refused with the "
+                f"player-facing message, not {exc!r}")
+
+    assert refused, "the corpus is supposed to contain unusable saves"
+    assert all(empty for _, empty in refused), \
+        "a save with collectibles in it was refused"
+    assert not any(empty for _, empty in accepted), \
+        "a save with nothing collected was accepted"
+    assert len(accepted) > 50

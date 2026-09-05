@@ -6,7 +6,9 @@ import argparse
 import sys
 from pathlib import Path
 
-from aksave.editor import SaveEditor
+from aksave.editor import (RailError, SaveEditor, skipped_note,
+                           where_to_find)
+from aksave.sgd import SgdError
 
 
 def fmt_time(seconds: float) -> str:
@@ -37,10 +39,12 @@ def cmd_collect_all(args):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(e.to_bytes())
     print(f"{before}/243 -> {e.challenge_count}/243  (+{len(added)} flags)")
-    if e.untracked_regions:
-        print(f"SKIPPED {region_names(e, e.untracked_regions)}: this save has no "
-              f"Riddler records for those areas yet. Visit each one once in game, "
-              f"save, and run again to finish the set.")
+    if e.left_behind:
+        print(f"LEFT ONE for you to pick up in game, so the achievement still "
+              f"fires: {where_to_find(e.left_behind, e.catalog)}")
+    note = skipped_note(e)
+    if note:
+        print(note)
     print(f"wrote {out} ({out.stat().st_size} bytes)")
 
 
@@ -59,7 +63,15 @@ def main(argv=None):
     c.set_defaults(func=cmd_collect_all, leave_one=True)
 
     args = p.parse_args(argv)
-    args.func(args)
+    try:
+        args.func(args)
+    except (RailError, SgdError, OSError) as exc:
+        # An expected refusal or a missing/locked file is not a bug in the
+        # tool, and a 20-line traceback for "you typed the wrong path" buries
+        # the one line that matters.
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":

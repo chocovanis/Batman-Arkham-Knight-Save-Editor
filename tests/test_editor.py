@@ -1,7 +1,8 @@
 # tests/test_editor.py
 import pytest
 from aksave.catalog import Catalog, challenges_from_flags
-from aksave.editor import SaveEditor, RailError
+from aksave.editor import (LEAVE_ONE_FLAG, RailError, SaveEditor,
+                           skipped_note, where_to_find)
 from tests.test_sgd import make_save_with_flags
 
 CAT = Catalog.load()
@@ -236,3 +237,148 @@ def test_challenge_slots_already_solved_are_left_alone():
     e.collect(ALL[:30])
     after = next(r for r in e.save.read_challenge_records() if r[1] == puzzle_id)
     assert after[2][solved_at] == 4
+
+
+# --- the hard-coded "leave one" trophy -------------------------------------
+# Session 6 pinned exactly one location to exactly one flag by having the
+# player pick the trophy up and reading what the game wrote. That single
+# verified mapping is what `leave_one` now holds back, so the collectible the
+# user has to find themselves is one we can actually describe.
+
+
+def test_leave_one_holds_back_the_one_trophy_whose_location_we_verified():
+    e = editor(ALL[:10])
+    e.collect_all(leave_one=True)
+    missing = [f for f in ALL if f not in e.collected]
+    assert missing == [LEAVE_ONE_FLAG]
+    assert e.challenge_count == 242
+
+
+def test_leave_out_falls_back_to_the_ranking_when_that_trophy_is_taken():
+    """If the user already has Pickup_13, leave_out must still return
+    something — otherwise collect_all(leave_one=True) silently becomes a full
+    collect and the achievement never fires."""
+    remaining = [f for f in ALL if f != LEAVE_ONE_FLAG]
+    chosen = SaveEditor.leave_out(remaining)
+    assert chosen != LEAVE_ONE_FLAG
+    assert chosen.split("_")[1:3] == ["CityZ", "Pickup"]
+
+
+def test_collect_all_records_which_collectible_it_left():
+    """The CLI and the GUI both have to tell the user what to go and find, so
+    the choice cannot stay buried inside collect_all."""
+    e = editor(ALL[:10])
+    e.collect_all(leave_one=True)
+    assert e.left_behind == LEAVE_ONE_FLAG
+
+
+def test_collect_all_without_leave_one_leaves_nothing_behind():
+    e = editor(ALL[:10])
+    e.collect_all(leave_one=False)
+    assert e.left_behind is None
+
+
+def test_the_hard_coded_trophy_is_a_real_bleake_island_trophy():
+    assert CAT.known(LEAVE_ONE_FLAG)
+    item = CAT.item(LEAVE_ONE_FLAG)
+    assert (item.region, item.type) == ("CityZ", "Pickup")
+
+
+def test_the_note_describes_where_the_trophy_is_and_never_prints_its_number():
+    """THE NUMBERING TRAP. Three schemes name this one object: the save flag
+    says Pickup_13, the tool's own display name says "Riddler Trophy 13", and
+    IGN calls it Bleake Island trophy 6. A user told "trophy 13" who then opens
+    IGN goes to the wrong building — the exact confound that wasted three
+    in-game attempts in session 6. Lead with the location; never print a bare
+    number next to an IGN reference."""
+    note = where_to_find(LEAVE_ONE_FLAG, CAT)
+    assert "Bleake Island" in note
+    assert "Ace Chemicals" in note
+    assert "13" not in note
+    assert CAT.item(LEAVE_ONE_FLAG).display not in note
+
+
+def test_the_note_for_any_other_collectible_names_it_and_says_what_to_do():
+    """The fallback has no location data, so the honest answer is the name plus
+    the escape hatch: turn the option off."""
+    other = "PickedUp_CityX_Pickup_1"
+    note = where_to_find(other, CAT)
+    assert CAT.item(other).display in note
+    assert "leave one" in note.lower()
+
+
+# --- areas the save has no Riddler records for -----------------------------
+# The game creates a region's challenge records the first time the player goes
+# there. `Riddler 123` in the corpus has 15 records and 5 per-region records
+# rather than 18 and 6, because it has never reached Arkham Knight HQ. The
+# corpus is not on CI, so the shape is synthesised here too.
+
+
+def test_the_fixture_can_build_a_save_that_has_never_reached_an_area():
+    e = SaveEditor(make_save_with_flags(ALL[:10], skip_regions=("HideOut",)), CAT)
+    assert e.untracked_regions == {"HideOut"}
+    assert len(e.save.read_challenge_records()) == 15
+    assert len(e.save.read_region_records()) == 5
+
+
+def test_skipped_note_names_the_area_and_says_how_to_fix_it():
+    e = SaveEditor(make_save_with_flags(ALL[:10], skip_regions=("HideOut",)), CAT)
+    note = skipped_note(e)
+    assert "Arkham Knight HQ" in note
+    assert "visit" in note.lower()
+
+
+def test_skipped_note_is_silent_when_every_area_is_tracked():
+    assert skipped_note(editor(ALL[:10])) is None
+
+
+def test_skipped_note_is_plain_ascii():
+    """It is printed by the CLI, and a Windows console is not UTF-8."""
+    e = SaveEditor(make_save_with_flags(ALL[:10], skip_regions=("HideOut",)), CAT)
+    assert skipped_note(e).isascii()
+
+
+def test_collect_all_on_such_a_save_stops_short_and_the_note_explains_it():
+    e = SaveEditor(make_save_with_flags(ALL[:10], skip_regions=("HideOut",)), CAT)
+    e.collect_all(leave_one=False)
+    assert e.challenge_count == 216          # 243 minus Arkham Knight HQ's 27
+    assert skipped_note(e) is not None
+
+
+# --- a save with nothing collected in it yet -------------------------------
+# The user opened their clean new-game slot in the packaged tool and got
+# "no world-state store holding collectibles was found" in a dialog box titled
+# "Cannot read save". Both halves of that are wrong for a player: the save read
+# perfectly well, and the sentence describes our parser rather than their game.
+
+
+def test_a_save_with_nothing_collected_is_refused_before_anything_else():
+    """The tool identifies the world-state store by finding a PickedUp_ key in
+    it. With no collectibles anywhere there is no key to find, so there is
+    genuinely nothing to edit — but that has to be said in those terms."""
+    with pytest.raises(RailError, match="no Riddler collectibles"):
+        SaveEditor(make_save_with_flags([]), CAT)
+
+
+def test_that_refusal_tells_the_player_what_to_do_about_it():
+    with pytest.raises(RailError) as exc:
+        SaveEditor(make_save_with_flags([]), CAT)
+    message = str(exc.value)
+    assert "pick up" in message.lower() or "collect" in message.lower()
+    assert "save" in message.lower()
+    assert "world-state" not in message, "that is a sentence about our parser"
+    assert message.isascii()
+
+
+def test_a_save_holding_a_single_collectible_is_accepted():
+    """One is enough: it is the key that identifies the store."""
+    e = SaveEditor(make_save_with_flags(["PickedUp_CityZ_Pickup_1"]), CAT)
+    assert e.collected_count == 1
+
+
+def test_flags_that_are_not_collectibles_do_not_count_as_progress():
+    """The corpus save an hour into the game carries 143 flags and not one
+    PickedUp_, and it is refused for exactly the same reason as a brand-new
+    one — so the refusal must key off collectibles, not off flags."""
+    with pytest.raises(RailError, match="no Riddler collectibles"):
+        SaveEditor(make_save_with_flags(["SomeStoryFlag", "AnotherFlag"]), CAT)

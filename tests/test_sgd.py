@@ -61,7 +61,7 @@ def test_flag_array_round_trip():
     assert s.read_flags() == names
 
 
-def make_save_with_flags(names, regions=True, second_store=False):
+def make_save_with_flags(names, regions=True, second_store=False, skip_regions=()):
     """Build a save carrying every structure the writer touches.
 
     A minimal file with only the primary flag array is not good enough to test
@@ -74,6 +74,11 @@ def make_save_with_flags(names, regions=True, second_store=False):
     early saves in the corpus that genuinely do not have one yet.
     `second_store=True` adds the second complete world state that 12 corpus
     saves — including all of the user's own — carry in section 0x20.
+    `skip_regions=("HideOut",)` reproduces a save that has never been to an
+    area. The game creates a region's records the first time the player goes
+    there, so `Riddler 123` in the corpus carries 15 challenge records and 5
+    per-region records rather than 18 and 6. The corpus is not available on
+    CI, so this is the only place that shape gets covered there.
     """
     from aksave.catalog import Catalog, challenges_from_flags, trophies_by_region
     from aksave.sgd import (CACHE_REGIONS, CHALLENGE_DONE, RIDDLE_SLOTS,
@@ -106,9 +111,11 @@ def make_save_with_flags(names, regions=True, second_store=False):
     sec2 += struct.pack(f"<{RIDDLE_SLOTS}I", *solved)
     sec2 += b"\x00" * 16
 
+    skipped_ids = {CACHE_REGIONS.index(r) + 1 for r in skip_regions}
     if regions:
-        sec2 += struct.pack("<I", 6) + b"\x00"    # count, then one filler byte
-        for region_id in range(1, 7):
+        kept = [r for r in range(1, 7) if r not in skipped_ids]
+        sec2 += struct.pack("<I", len(kept)) + b"\x00"   # count, then a filler
+        for region_id in kept:
             record = bytearray(16)
             record[0] = region_id
             record[2] = 9 if region_id <= 3 else 8
@@ -122,6 +129,8 @@ def make_save_with_flags(names, regions=True, second_store=False):
         collected = {f for f in names if f.startswith("PickedUp_")}
         for puzzle in Catalog.load().puzzles:
             region_id = CACHE_REGIONS.index(puzzle.region) + 1
+            if region_id in skipped_ids:
+                continue
             status = bytes(CHALLENGE_DONE if done else 3
                            for done in puzzle.satisfied(collected))
             sec2 += bytes([0, puzzle.id, 0, region_id])
