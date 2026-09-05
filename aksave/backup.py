@@ -65,16 +65,49 @@ def create_backup(slot_dir: Path, backup_root: Path, label: str = "") -> Path:
 
 
 def list_backups(backup_root: Path) -> list[BackupEntry]:
+    """Every usable backup, newest first. One bad entry must not cost the rest.
+
+    The loop is guarded per directory because this is the recovery path, and
+    the events that damage a backup are the same events that send the user
+    looking for one. `manifest.json` is written last and in a single un-flushed
+    write, so an interrupted backup leaves exactly the truncated or NUL-padded
+    file that `json.loads` rejects — and an unguarded raise here took every
+    other backup in the folder with it.
+    """
     root = Path(backup_root)
     if not root.is_dir():
         return []
+    try:
+        entries = sorted(root.iterdir(), reverse=True)
+    except OSError:
+        return []
+
     out = []
-    for d in sorted(root.iterdir(), reverse=True):
-        mf = d / "manifest.json"
-        if d.is_dir() and mf.exists():
+    for d in entries:
+        try:
+            mf = d / "manifest.json"
+            if not (d.is_dir() and mf.exists()):
+                continue
             m = json.loads(mf.read_text())
-            out.append(BackupEntry(d, m["created"], m.get("label", ""), len(m["files"])))
+            out.append(BackupEntry(d, m.get("created", d.name), m.get("label", ""),
+                                   len(m.get("files", {}))))
+        except (OSError, ValueError, TypeError, AttributeError):
+            continue        # a damaged backup is skipped, never fatal
     return out
+
+
+def backup_contents(backup_dir: Path) -> list[str]:
+    """The filenames a restore from this backup would put back.
+
+    Needed before the restore runs, so the user can be told what is about to
+    be overwritten. Never raises: a backup too damaged to read is one we
+    cannot describe, and the caller decides what to do about that.
+    """
+    try:
+        m = json.loads((Path(backup_dir) / "manifest.json").read_text())
+        return sorted(m.get("files", {}))
+    except (OSError, ValueError, TypeError, AttributeError):
+        return []
 
 
 def restore_backup(backup_dir: Path, slot_dir: Path) -> list[str]:
