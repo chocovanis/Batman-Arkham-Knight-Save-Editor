@@ -382,3 +382,34 @@ def test_flags_that_are_not_collectibles_do_not_count_as_progress():
     one — so the refusal must key off collectibles, not off flags."""
     with pytest.raises(RailError, match="no Riddler collectibles"):
         SaveEditor(make_save_with_flags(["SomeStoryFlag", "AnotherFlag"]), CAT)
+
+
+# --- GOG/Epic saves --------------------------------------------------------
+# A supported platform whose only end-to-end coverage was corpus-gated, so it
+# ran nowhere except this machine. GOG/Epic files carry a 4-byte prefix ahead
+# of the body, and every offset in the writer is relative to the body.
+
+
+def test_a_gog_save_is_edited_and_keeps_its_prefix(gog_prefix=b"\x00\x0a\x0a\x00"):
+    raw = gog_prefix + make_save_with_flags(ALL[:10])
+    e = SaveEditor(raw, CAT)
+    assert e.platform == "GOG/Epic"
+    e.collect_all(leave_one=False)
+    out = e.to_bytes()
+    assert out[:4] == gog_prefix
+    assert len(out) == len(raw)
+
+    again = SaveEditor(out, CAT)
+    assert again.platform == "GOG/Epic"
+    assert again.challenge_count == 243
+
+
+def test_the_prefix_does_not_shift_any_structure_the_writer_touches():
+    """The bug this guards against is silent: every locator is an offset into
+    `body`, so a prefix leaking into one of them would corrupt a GOG save
+    while a Steam save stayed perfect."""
+    steam = SaveEditor(make_save_with_flags(ALL[:10]), CAT)
+    gog = SaveEditor(b"\x00\x0a\x0a\x00" + make_save_with_flags(ALL[:10]), CAT)
+    steam.collect_all(leave_one=False)
+    gog.collect_all(leave_one=False)
+    assert gog.to_bytes()[4:] == steam.to_bytes()
