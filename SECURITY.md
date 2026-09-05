@@ -25,9 +25,10 @@ file back off disk to confirm it says what it should.
 If your antivirus flags the packaged build, that is a known PyInstaller false
 positive — it is what an unsigned, freshly-built Python executable looks like to
 a heuristic scanner. The full source is in this repository, and release binaries
-are built by GitHub Actions with build provenance attestation. Verify one with:
+are built by GitHub Actions with build provenance attestation. Extract the zip
+and verify the executable inside it:
 
-    gh attestation verify <file> -R chocovanis/Batman-Arkham-Knight-Save-Editor
+    gh attestation verify AK-Riddler-Save-Editor.exe -R chocovanis/Batman-Arkham-Knight-Save-Editor
 
 You can also skip the binary entirely and run from source:
 
