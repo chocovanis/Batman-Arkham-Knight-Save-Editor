@@ -33,11 +33,23 @@ jobs:
       # `gh attestation verify` on the downloaded file reported no attestation
       # found — which reads as confirmation to someone already worried it is
       # malware.
+      #
+      # Skipped while the repository is private. Artifact attestations are
+      # public-repository-only on the Free, Pro and Team plans; private repos
+      # need GitHub Enterprise Cloud. Without this guard the step fails and
+      # takes the release with it, so a private tag would produce no asset at
+      # all. Once the repository is public the condition is true and every
+      # release is attested — which is the state the README describes.
       - uses: actions/attest-build-provenance@v1
+        if: ${{ !github.event.repository.private }}
         with:
           subject-path: |
             dist/AK-Riddler-Save-Editor/AK-Riddler-Save-Editor.exe
             AK-Riddler-Save-Editor.zip
+      - if: ${{ github.event.repository.private }}
+        run: |
+          echo "::warning::Repository is private, so build provenance attestation was skipped."
+          echo "::warning::Re-tag once the repository is public to get an attested release."
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with: { files: AK-Riddler-Save-Editor.zip }
