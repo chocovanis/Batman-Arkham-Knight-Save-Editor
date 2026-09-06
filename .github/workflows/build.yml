@@ -6,8 +6,6 @@ on:
 
 permissions:
   contents: write
-  id-token: write
-  attestations: write
 
 jobs:
   windows:
@@ -22,34 +20,60 @@ jobs:
       # cannot run here — that has to be visible in the log rather than
       # hidden behind a green tick.
       - run: python -m pytest tests -v -rs
+      # This command is quoted verbatim in README.md, under "Option C — build
+      # the .exe yourself". Change one without the other and the README is
+      # lying about how the release was built, which is the whole point of
+      # publishing the command at all.
       - run: >
           pyinstaller --onedir --noupx --noconsole
           --name "AK-Riddler-Save-Editor"
           --add-data "aksave/data/manifest.json;aksave/data"
           ak_riddler_editor.py
       - run: Compress-Archive dist/AK-Riddler-Save-Editor AK-Riddler-Save-Editor.zip
-      # Attest both: the exe is what the README tells people to verify, and the
-      # zip is what they actually download. Attesting only the exe meant
-      # `gh attestation verify` on the downloaded file reported no attestation
-      # found — which reads as confirmation to someone already worried it is
-      # malware.
-      #
-      # Skipped while the repository is private. Artifact attestations are
-      # public-repository-only on the Free, Pro and Team plans; private repos
-      # need GitHub Enterprise Cloud. Without this guard the step fails and
-      # takes the release with it, so a private tag would produce no asset at
-      # all. Once the repository is public the condition is true and every
-      # release is attested — which is the state the README describes.
-      - uses: actions/attest-build-provenance@v1
-        if: ${{ !github.event.repository.private }}
-        with:
-          subject-path: |
-            dist/AK-Riddler-Save-Editor/AK-Riddler-Save-Editor.exe
-            AK-Riddler-Save-Editor.zip
-      - if: ${{ github.event.repository.private }}
-        run: |
-          echo "::warning::Repository is private, so build provenance attestation was skipped."
-          echo "::warning::Re-tag once the repository is public to get an attested release."
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with: { files: AK-Riddler-Save-Editor.zip }
+
+# ---------------------------------------------------------------------------
+# There is no build provenance attestation here. It was removed deliberately,
+# not forgotten, so the reasoning and the recipe live with the file.
+#
+# Why it went:
+#   * Artifact attestations are public-repository-only on the Free, Pro and
+#     Team plans; private repositories need GitHub Enterprise Cloud. On this
+#     account the step was permanently skipped and never produced a single
+#     attestation.
+#   * Making the repository public does not attest a release that already
+#     exists. A NEW tag is required, so the guarantee was gated behind two
+#     separate future events.
+#   * The user-facing half was worse than nothing. `gh attestation verify`
+#     needs the GitHub CLI *and* a GitHub account, and when there is nothing
+#     to find it prints a bare `Error: HTTP 404: Not Found` with a raw
+#     api.github.com URL — identical whether the repository is private, has no
+#     attestations, or does not concern you at all. Handing that to someone
+#     whose antivirus has just gone off reads as confirmation.
+#   * README.md now answers "why should I trust this binary" with things the
+#     audience can actually do: run from source, or build the .exe with the
+#     exact pyinstaller command above.
+#
+# To put it back — public repository only:
+#   1. Add to `permissions:` above:  id-token: write  and  attestations: write
+#      (actions/attest also documents artifact-metadata: write, but that is for
+#      storage records on organisation-owned repositories and does not apply
+#      to a personal account.)
+#   2. Add a step AFTER the release step above, so a failure there can never
+#      cost the release asset. Use actions/attest — as of v4,
+#      actions/attest-build-provenance is only a wrapper around it:
+#
+#        - uses: actions/attest@v4
+#          with:
+#            subject-path: |
+#              dist/AK-Riddler-Save-Editor/AK-Riddler-Save-Editor.exe
+#              AK-Riddler-Save-Editor.zip
+#
+#      Attest both. The zip is what people download; the .exe is what they run.
+#      Attesting only one means verification of the other reports nothing found.
+#   3. Push a NEW tag. Existing releases stay unattested for good.
+#   4. If you then document verification, put it in SECURITY.md, not in the
+#      README FAQ. The FAQ is read by someone who is already frightened.
+# ---------------------------------------------------------------------------

@@ -12,6 +12,37 @@ It edits only Riddler collectible flags. Nothing else in your save is touched.
 
 ---
 
+## TL;DR
+
+- **What it is.** A Windows desktop tool that marks Riddler collectibles as
+  collected in a Batman: Arkham Knight save. It edits Riddler collectible flags
+  and nothing else.
+- **Close the game completely first** — all the way out, not to the main menu.
+- **Make your own copy of your save folder** before you start. The tool backs one
+  up automatically, but your own copy is what makes a mistake reversible.
+- **Getting it:** download the zip from
+  [Releases](https://github.com/chocovanis/Batman-Arkham-Knight-Save-Editor/releases)
+  and run the `.exe`, **or** run it from source with Python — there are no
+  dependencies to install. Step-by-step for both is below.
+- **Use it any time after you have reached Arkham Knight HQ.** It fills in only
+  the areas your save has already been to, and it names any it skipped. Visit a
+  skipped area once in game, save, and run it again to finish the set.
+- **"Leave one collectible uncollected" is on by default**, so the achievement
+  fires normally when you pick that last one up. The editor tells you exactly
+  which one it left and where to find it.
+- **The Riddler encounter needs 243/243 *and* a freed Catwoman.** Setting the
+  count early does not skip the story, and the content can take a few minutes of
+  play to show up.
+- **Restore puts back the whole save folder** — every slot, not just the one
+  you edited.
+- **Your antivirus may flag the `.exe`.** It is an unsigned PyInstaller build and
+  that is what those look like to a scanner. Build it yourself or run from
+  source — see the FAQ.
+
+Everything below is the long version.
+
+---
+
 ## ⚠️ Back up your save first
 
 The tool takes a verified backup automatically before every write, and it puts
@@ -69,26 +100,17 @@ This matters more than the feature list.
 percentage — the percentage turns out to be the wrong thing to wait for.
 
 The editor gives you collectibles only in areas your save already has Riddler
-records for, and tells you which ones it skipped. Across 60 real saves, in a
-playthrough of your own the only area ever missing past the prologue is
-**Arkham Knight HQ** — the three islands, Stagg Airships and Panessa Studios
-always appear together. Progress is a poor predictor of it:
-
-| | |
-|---|---|
-| Highest count still missing an area | **184/243** — missing Arkham Knight HQ |
-| Lowest count with all six areas | **2/243** |
-
-So run it whenever you like. If it says an area was skipped, visit that area
+records for, and tells you which ones it skipped. In a playthrough of your own
+the only area ever missing past the prologue is **Arkham Knight HQ** — the
+three islands, Stagg Airships and Panessa Studios always turn up together. How
+far through the game you are is a poor predictor of it, so run it whenever you
+like. If it says an area was skipped, visit that area
 once in game, save, and run it again to finish the set.
 
 You cannot get this wrong by accident. The worst case is that the count stops
 short by whatever the skipped areas hold — 27 challenges if it is only Arkham
 Knight HQ — and the editor names every area it skipped, on the status line, in
-the tree, and in the log. A **downloaded** save can be stranger than anything
-you would play yourself: one in the test corpus has 19 hours on the clock and
-Riddler records for a single area, and the editor takes it to 27/243 and says
-exactly why.
+the tree, and in the log.
 
 Two things worth knowing before you set 243/243:
 
@@ -106,35 +128,73 @@ there, but it is why a late save is a more comfortable starting point.
 
 ### Confirmed in game
 
-An edited save built by this tool was taken to 243/243 on a late-game Steam
+A save edited by this tool was taken to 243/243 on a late-game Steam
 playthrough. The Riddler encounter became available, the fight was played and
-won, and the game then wrote its own save on top of ours. Comparing that
-game-authored save against our input: the flag array, all 243 challenge status
-bytes, the riddle array and the trophy cache came back **byte-for-byte
-identical**, with zero collectible keys added, removed or changed.
+won, and the game then saved on top of the edit — keeping every collectible
+exactly as the editor had set it.
 
 ---
 
 ## Download and run
 
-**Option A — packaged build (no Python needed)**
+Three ways in. **Option A** is quickest. **Option B** is the one to pick if you
+would rather not run a downloaded executable at all — it is not a fallback, it
+is the better answer.
+
+### Option A — packaged build (nothing to install)
 
 1. Download `AK-Riddler-Save-Editor.zip` from the
    [Releases](https://github.com/chocovanis/Batman-Arkham-Knight-Save-Editor/releases)
    page.
-2. Extract the whole folder — do not run the `.exe` from inside the zip.
-3. Run **`AK-Riddler-Save-Editor.exe`**.
+2. Right-click the zip and choose **Extract All**. Extract the whole folder —
+   do not run the `.exe` from inside the zip.
+3. Open the extracted folder and run **`AK-Riddler-Save-Editor.exe`**.
 
-**Option B — from source**
+Keep the `_internal` folder sitting next to the `.exe`. Moving the `.exe` out on
+its own stops it starting.
 
-```bash
-git clone https://github.com/chocovanis/Batman-Arkham-Knight-Save-Editor.git
-cd Batman-Arkham-Knight-Save-Editor
-python ak_riddler_editor.py
+### Option B — run from source
+
+There is nothing to install but Python itself. The editor uses only what ships
+with Python: no packages to add, no `pip install`, no `requirements.txt`.
+
+1. **Install Python.** Get 3.10 or newer from
+   [python.org/downloads](https://www.python.org/downloads/). On the first
+   screen of the installer, **tick "Add python.exe to PATH"** before clicking
+   Install. It is easy to miss and the rest of these steps depend on it.
+2. **Get the source.** On this repository's page click the green **Code**
+   button, then **Download ZIP**, and extract it. If you have git instead:
+
+   ```powershell
+   git clone https://github.com/chocovanis/Batman-Arkham-Knight-Save-Editor.git
+   ```
+3. **Open a terminal in that folder.** Open the extracted folder in Explorer,
+   click into the address bar at the top, type `powershell`, and press Enter.
+4. **Run it:**
+
+   ```powershell
+   python ak_riddler_editor.py
+   ```
+
+If step 4 says Python is not recognised, the PATH tick box in step 1 was missed:
+re-run the Python installer, choose **Modify**, and enable it. `python --version`
+should print 3.10 or higher.
+
+### Option C — build the `.exe` yourself
+
+If you would rather run a binary you built than one you downloaded, follow steps
+1–3 of Option B, then:
+
+```powershell
+pip install pyinstaller
+pyinstaller --onedir --noupx --noconsole --name "AK-Riddler-Save-Editor" --add-data "aksave/data/manifest.json;aksave/data" ak_riddler_editor.py
 ```
 
-Python 3.10 or newer. There are no dependencies at all — everything it uses
-ships with Python.
+Your build appears in `dist\AK-Riddler-Save-Editor\`. Run the `.exe` from inside
+that folder, `_internal` and all.
+
+That is the exact command the released build is made with — you can read it in
+[`.github/workflows/build.yml`](.github/workflows/build.yml).
 
 ---
 
@@ -286,14 +346,26 @@ locally by the game.
 **My antivirus flagged the download.**
 That is a PyInstaller false positive, and a common one: an unsigned executable
 built by bundling a Python interpreter looks structurally like packed malware to
-a heuristic scanner. The full source is in this repository, and release builds
-are produced by GitHub Actions with build provenance attestation. Extract the
-zip and verify **the executable inside it**:
+a heuristic scanner. It is unsigned because a code-signing certificate costs more
+per year than this tool is worth.
 
-```bash
-gh attestation verify AK-Riddler-Save-Editor.exe -R chocovanis/Batman-Arkham-Knight-Save-Editor
-```
-If you would rather not deal with it, run from source instead — see Option B.
+Nothing anyone tells you can prove a stranger's binary is safe, so here is what
+you can actually check, best first:
+
+1. **Don't run the binary.** Run from source instead — **Option B**. Nothing is
+   compiled and there are no dependencies to install, so there is no binary to
+   trust in the first place.
+2. **Build the `.exe` yourself** — **Option C**. Two commands, and it is the
+   same command the release is built with.
+3. **Check your download is intact.** GitHub shows a SHA-256 beside every file
+   on the Releases page. Compare it with `Get-FileHash AK-Riddler-Save-Editor.zip`,
+   which is built into Windows. That proves you got the file GitHub has — not
+   that the file is safe.
+4. **Get a second opinion.** Upload the zip to virustotal.com. Upload the file
+   rather than searching for its hash: a search that finds nothing means it has
+   never been submitted, not that it is clean.
+
+What the tool will and will not touch is in [SECURITY.md](SECURITY.md).
 
 **I edited my save and nothing changed in game.**
 In order of likelihood:
@@ -328,26 +400,6 @@ scope is what would make the tool capable of breaking a playthrough.
 
 ---
 
-## How it works
-
-Arkham Knight saves are fixed-size, uncompressed, unencrypted and unchecksummed.
-The file size never changes: insertions are absorbed by the megabyte of zero
-padding at the end, and existing entries are never moved or rewritten.
-
-Collecting something is not one edit, though. The game keeps its Riddler progress
-in six separate places — a flag list, one or two world-state key/value stores, a
-243-slot per-challenge block, a riddle array, a per-region trophy cache and the
-counter string the HUD displays — and it updates all of them together. An earlier
-build wrote only the flag list; the resulting save loaded perfectly and showed the
-old progress. The editor now writes every one of them, and refuses to touch a save
-in which it cannot find all six.
-
-The format was reverse-engineered from a corpus of 64 real save files across both
-platforms and every progression state from 0 to 243. Each rule is checked against
-all of them, not against the one file it was derived from: the challenge count
-matches the game's own cached counter in all 64, and all 12,960 per-challenge
-status bytes match the puzzle table in the game's own config.
-
 ## Contributing / reporting a problem
 
 Open an issue with the contents of the activity log (**Copy log**). Please do
@@ -360,18 +412,9 @@ GPL-3.0. See [LICENSE](LICENSE). Not affiliated with, endorsed by, or connected
 to Warner Bros., Rocksteady Studios, or DC Comics. Batman: Arkham Knight is
 their trademark.
 
-**No game code, assets, text or save data is redistributed here.** The repository is
-source only. The one data file, `aksave/data/manifest.json`, holds two factual tables
-about the game and nothing else:
-
-- the 315 collectible **flag identifiers** (`PickedUp_CityZ_Pickup_21` and the like),
-  extracted from a completed save. The human-readable names shown in the editor are
-  generated by `tools/build_manifest.py`, not taken from the game;
-- the 18-entry **Riddler puzzle table**, derived from the game's own
-  `BmGame/Config/DefaultGame.ini` (`[BmGame.RGameInfo].RiddlerPuzzles`), which is a
-  plain-text config file in every installation. It records which of the 243
-  challenges each puzzle is made of, which is what lets the editor set the
-  collectibles menu correctly rather than only the counter.
-
-Both are regenerable from your own installation with `tools/build_manifest.py`, and
-neither contains game content.
+**No game code, assets, text or save data is redistributed here.** The repository
+is source only. Its one data file, `aksave/data/manifest.json`, holds two factual
+tables about the game and no game content: the 315 collectible flag identifiers,
+and the 18-entry Riddler puzzle table derived from the game's own plain-text
+`DefaultGame.ini`. Both are regenerable from your own installation with
+`tools/build_manifest.py`.

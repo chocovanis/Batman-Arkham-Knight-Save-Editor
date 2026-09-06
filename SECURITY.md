@@ -24,15 +24,35 @@ file back off disk to confirm it says what it should.
 
 If your antivirus flags the packaged build, that is a known PyInstaller false
 positive — it is what an unsigned, freshly-built Python executable looks like to
-a heuristic scanner. The full source is in this repository, and release binaries
-are built by GitHub Actions with build provenance attestation. Extract the zip
-and verify the executable inside it:
+a heuristic scanner. It is unsigned because a code-signing certificate costs more
+per year than this tool is worth.
 
-    gh attestation verify AK-Riddler-Save-Editor.exe -R chocovanis/Batman-Arkham-Knight-Save-Editor
+Nothing anyone tells you can prove a stranger's binary is safe. What you can do,
+in order of how much it actually settles:
 
-You can also skip the binary entirely and run from source:
+1. **Don't run the binary at all.** Run from source instead:
 
-    python ak_riddler_editor.py
+       python ak_riddler_editor.py
+
+   The editor has no dependencies. `pyproject.toml` declares none, and every
+   import in the codebase ships with Python itself. Nothing is compiled and
+   nothing is downloaded, so there is no binary to trust.
+
+2. **Build the executable yourself** from the source in this repository. The
+   README's "Option C" gives the exact command — it is the same one
+   `.github/workflows/build.yml` runs to produce the release.
+
+3. **Check your download is intact.** GitHub publishes a SHA-256 next to every
+   release asset. Compare it with your copy:
+
+       Get-FileHash AK-Riddler-Save-Editor.zip
+
+   That is built into Windows. It proves you have the file GitHub has — it does
+   not prove that file is safe.
+
+4. **Get a second opinion.** Upload the zip to virustotal.com for a multi-engine
+   scan. Upload the file rather than searching for its hash: a hash search that
+   finds nothing means the file has never been submitted, not that it is clean.
 
 ## Reporting an issue
 
