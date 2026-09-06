@@ -22,11 +22,13 @@ It edits only Riddler collectible flags. Nothing else in your save is touched.
   up automatically, but your own copy is what makes a mistake reversible.
 - **Getting it:** download the zip from
   [Releases](https://github.com/chocovanis/Batman-Arkham-Knight-Save-Editor/releases)
-  and run the `.exe`, **or** run it from source with Python — there are no
-  dependencies to install. Step-by-step for both is below.
-- **Use it any time after you have reached Arkham Knight HQ.** It fills in only
-  the areas your save has already been to, and it names any it skipped. Visit a
-  skipped area once in game, save, and run it again to finish the set.
+  and run the `.exe`, or run it from source with Python — the editor itself has
+  nothing to install. You can also build the `.exe` yourself, which needs
+  PyInstaller. Step-by-step for all three is below.
+- **Run it whenever you like.** It fills in only the areas your save has already
+  been to and names any it skipped — Arkham Knight HQ is the one most likely to
+  be missing. Visit a skipped area once in game, save, and run it again to
+  finish the set.
 - **"Leave one collectible uncollected" is on by default**, so the achievement
   fires normally when you pick that last one up. The editor tells you exactly
   which one it left and where to find it.
@@ -96,15 +98,15 @@ This matters more than the feature list.
 
 ## When should you use it?
 
-**Once you have reached Arkham Knight HQ.** Not at a particular completion
-percentage — the percentage turns out to be the wrong thing to wait for.
+**Whenever you like — there is nothing to wait for.** Not a particular
+completion percentage, and not a particular point in the story. What decides
+what you get is which areas your save has already been to.
 
 The editor gives you collectibles only in areas your save already has Riddler
 records for, and tells you which ones it skipped. In a playthrough of your own
 the only area ever missing past the prologue is **Arkham Knight HQ** — the
 three islands, Stagg Airships and Panessa Studios always turn up together. How
-far through the game you are is a poor predictor of it, so run it whenever you
-like. If it says an area was skipped, visit that area
+far through the game you are is a poor predictor of it. If it says an area was skipped, visit that area
 once in game, save, and run it again to finish the set.
 
 You cannot get this wrong by accident. The worst case is that the count stops
@@ -147,8 +149,15 @@ is the better answer.
    [Releases](https://github.com/chocovanis/Batman-Arkham-Knight-Save-Editor/releases)
    page.
 2. Right-click the zip and choose **Extract All**. Extract the whole folder —
-   do not run the `.exe` from inside the zip.
+   do not run the `.exe` from inside the zip. Windows names the destination
+   after the zip, so you end up with `AK-Riddler-Save-Editor` inside another
+   `AK-Riddler-Save-Editor`; the inner one is the folder you want.
 3. Open the extracted folder and run **`AK-Riddler-Save-Editor.exe`**.
+
+Windows will probably show **"Windows protected your PC"** the first time. That
+is SmartScreen reacting to an executable it has not seen before from a publisher
+it does not recognise — it is not a detection. Click **More info**, then **Run
+anyway**. If you would rather not, use Option B or C instead.
 
 Keep the `_internal` folder sitting next to the `.exe`. Moving the `.exe` out on
 its own stops it starting.
@@ -163,13 +172,19 @@ with Python: no packages to add, no `pip install`, no `requirements.txt`.
    screen of the installer, **tick "Add python.exe to PATH"** before clicking
    Install. It is easy to miss and the rest of these steps depend on it.
 2. **Get the source.** On this repository's page click the green **Code**
-   button, then **Download ZIP**, and extract it. If you have git instead:
+   button, then **Download ZIP**, and extract it. Extracting gives you a folder
+   named `Batman-Arkham-Knight-Save-Editor-main` with **another folder of the
+   same name inside it** — keep opening until you can see
+   `ak_riddler_editor.py`. That inner folder is the one you want. With git
+   instead:
 
    ```powershell
    git clone https://github.com/chocovanis/Batman-Arkham-Knight-Save-Editor.git
+   cd Batman-Arkham-Knight-Save-Editor
    ```
-3. **Open a terminal in that folder.** Open the extracted folder in Explorer,
-   click into the address bar at the top, type `powershell`, and press Enter.
+3. **Open a terminal in that folder.** With `ak_riddler_editor.py` visible in
+   Explorer, click into the address bar at the top, type `powershell`, and press
+   Enter.
 4. **Run it:**
 
    ```powershell
@@ -358,9 +373,17 @@ you can actually check, best first:
 2. **Build the `.exe` yourself** — **Option C**. Two commands, and it is the
    same command the release is built with.
 3. **Check your download is intact.** GitHub shows a SHA-256 beside every file
-   on the Releases page. Compare it with `Get-FileHash AK-Riddler-Save-Editor.zip`,
-   which is built into Windows. That proves you got the file GitHub has — not
-   that the file is safe.
+   on the Releases page. To compare it, open the folder you downloaded to, click
+   into the address bar, type `powershell`, press Enter, and run:
+
+   ```powershell
+   Get-FileHash AK-Riddler-Save-Editor.zip
+   ```
+
+   PowerShell prints the hash in CAPITALS; GitHub shows it in lower case behind
+   a `sha256:` prefix. That difference is cosmetic — compare the letters and
+   digits and ignore the case. This proves you got the file GitHub has; it does
+   not prove the file is safe.
 4. **Get a second opinion.** Upload the zip to virustotal.com. Upload the file
    rather than searching for its hash: a search that finds nothing means it has
    never been submitted, not that it is clean.
@@ -402,11 +425,19 @@ scope is what would make the tool capable of breaking a playthrough.
 
 ## Contributing / reporting a problem
 
-Open an issue with the contents of the activity log (**Copy log**). Please do
-not attach save files to a public issue — they are large and they are your
-personal game data.
+Open an issue with the contents of the activity log (**Copy log**), and attach
+the save file if you can — a save that reproduces the problem is usually the
+only way to fix one. GitHub does not accept a `.sgd` file directly, so put it in
+a zip first.
+
+One thing to know before you paste: the log includes the full path to your save
+folder, which on Steam contains your account ID. If you would rather not post
+that, replace it with `...`. Everything else in the log is a record of what the
+editor did, and that is the part that helps.
 
 ## Licence
+
+Copyright © 2026 chocovanis.
 
 GPL-3.0. See [LICENSE](LICENSE). Not affiliated with, endorsed by, or connected
 to Warner Bros., Rocksteady Studios, or DC Comics. Batman: Arkham Knight is
@@ -414,7 +445,15 @@ their trademark.
 
 **No game code, assets, text or save data is redistributed here.** The repository
 is source only. Its one data file, `aksave/data/manifest.json`, holds two factual
-tables about the game and no game content: the 315 collectible flag identifiers,
-and the 18-entry Riddler puzzle table derived from the game's own plain-text
-`DefaultGame.ini`. Both are regenerable from your own installation with
-`tools/build_manifest.py`.
+tables about the game and no game content:
+
+- the **18-entry Riddler puzzle table**, derived from the game's own plain-text
+  `BmGame/Config/DefaultGame.ini`, which is present in every installation;
+- the **315 collectible flag identifiers** (`PickedUp_CityZ_Pickup_21` and the
+  like), read out of a save file that already has all of them.
+
+`tools/build_manifest.py` regenerates the whole file, but it reads those
+identifiers out of a 100%-complete save and refuses anything else — so you need
+such a save as well as the game install. The human-readable names shown in the
+editor are assembled from the game's own region and category names plus an
+index; no third-party name list is used or shipped.

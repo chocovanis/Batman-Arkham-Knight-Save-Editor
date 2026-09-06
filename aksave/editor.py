@@ -1,7 +1,7 @@
 """Safe editing operations. The only module the GUI calls to change a save.
 
-Every rail here exists because of a specific documented hazard; see the design
-spec section 5. The forbidden set is what keeps the worst hazard structurally
+Every rail here exists because of a specific documented hazard. The forbidden
+set is what keeps the worst hazard structurally
 unreachable rather than merely warned about.
 """
 
@@ -242,7 +242,7 @@ class SaveEditor:
         that loads cleanly and displays the old totals — that is exactly what
         happened on the first in-game test. Every location below was confirmed
         by diffing two real rotations one pickup apart and then checking the
-        rule against all 64 corpus saves.
+        rule against all 60 corpus saves.
 
         Offsets are all read before anything moves; `SgdFile.apply` applies the
         batch from the highest offset down so they stay valid.

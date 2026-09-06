@@ -39,7 +39,7 @@ def challenges_from_flags(flags) -> int:
     only when several regions each hold a part-finished group of five. The
     corpus does contain such a save — `Riddler 183/BAK1Save2x2.sgd`, where the
     game's own counter says 166 and the global rule says 167 — so the
-    per-region rule is the correct one. It matches all 64 corpus saves.
+    per-region rule is the correct one. It matches all 60 corpus saves.
     """
     collected = {f for f in flags if f.startswith("PickedUp_")}
     breakables: dict[str, int] = {}

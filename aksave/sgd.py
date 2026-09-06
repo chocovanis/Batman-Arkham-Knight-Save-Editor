@@ -1,7 +1,7 @@
 """Binary layer for Batman: Arkham Knight .sgd save files.
 
 Knows nothing about the Riddler. Everything here was verified against a
-64-save corpus spanning both Steam and GOG/Epic builds; see the design spec.
+60-save corpus spanning both Steam and GOG/Epic builds.
 
 Collectible state is not held in one place. The game keeps a primary flag
 array, a global key/value store, a per-region progress cache and a cached
@@ -15,7 +15,7 @@ import struct
 from dataclasses import dataclass, field
 
 STEAM_SIZE = 2428928
-# Section lengths. 0x1C is zero in 51 of 53 corpus saves, which is exactly why
+# Section lengths. 0x1C is zero in 58 of 60 corpus saves, which is exactly why
 # it was missed when the identity was first derived from a 7-file sample. Two
 # GOG saves carry 0x1C = 9247, and omitting it puts payload_end 9247 bytes early
 # — mid-FString. Including it, every corpus file validates.
@@ -28,7 +28,7 @@ ARRAY_PREFIX = bytes.fromhex("000000" + "1c" + "00000000000000")
 MAX_PLAYTIME = 1000 * 3600  # a sanity bound, not a game limit
 
 # The progress cache is a run of four counted uint32 arrays whose element
-# counts are 9, 9, 9, 10. That signature is unique inside section 2 in all 64
+# counts are 9, 9, 9, 10. That signature is unique inside section 2 in all 60
 # corpus saves, including brand-new games where every element is zero — which
 # is why it is used as the anchor instead of matching on values.
 CACHE_SIGNATURE = (9, 9, 9, 10)
@@ -66,7 +66,7 @@ class Store:
 
     Two parallel arrays — `count` FStrings followed by `count` int32 values.
     Riddler pickups appear here as `PickedUp_… -> 1`, alongside map objects,
-    chapter markers and level-object state. In all 64 corpus saves the set of
+    chapter markers and level-object state. In all 60 corpus saves the set of
     PickedUp_ keys here is exactly equal to the set in the primary flag array;
     the editor's earlier failure in game was writing one and not the other.
     """
@@ -256,7 +256,7 @@ class SgdFile:
         18 records, one per Riddler puzzle, holding 18 status bytes for each of
         the three city regions and 9 for each of the others — 243 in total,
         exactly the number the game displays. A byte >= 4 means that challenge
-        is done: counting them reproduces the game's own counter on all 64
+        is done: counting them reproduces the game's own counter on all 60
         corpus saves, and matching each byte against the puzzle's piece list
         from the manifest is correct on all 12,960 observed bytes.
 
@@ -317,7 +317,7 @@ class SgdFile:
         Riddle indices are a single 1..40 space shared across all six regions,
         not per-region, so one flat array covers them; slot 0 and slots 41..62
         are always zero. A solved riddle holds 1 or 2, and the set of non-zero
-        slots equals the held `PickedUp_*_Riddler_*` set in all 64 corpus saves.
+        slots equals the held `PickedUp_*_Riddler_*` set in all 60 corpus saves.
 
         Located structurally — a count of 63 followed by 63 values of at most 2
         — which finds exactly one candidate in every corpus save.

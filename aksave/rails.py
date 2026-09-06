@@ -1,4 +1,4 @@
-"""Rails that guard the act of writing. See design spec section 5.3."""
+"""Rails that guard the act of writing."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 SLOT_RE = re.compile(r"^BAK1Save(\d+)x(\d+)\.sgd$", re.IGNORECASE)
 
 # The game keeps exactly three rotations per slot. Confirmed across every save
-# folder in the 53-file corpus: no folder holds any rotation number but 0, 1, 2.
+# folder in the 60-file corpus: no folder holds any rotation number but 0, 1, 2.
 ROTATIONS = (0, 1, 2)
 
 GAME_PROCESS = "BatmanAK.exe"

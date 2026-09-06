@@ -29,10 +29,19 @@ jobs:
           --name "AK-Riddler-Save-Editor"
           --add-data "aksave/data/manifest.json;aksave/data"
           ak_riddler_editor.py
+      # GPL-3.0 s4 and s6: conveying object code means conveying the licence
+      # with it. The zip is the only thing most people ever receive, so the
+      # licence has to be inside it, not only in the repository.
+      - run: Copy-Item LICENSE dist/AK-Riddler-Save-Editor/LICENSE
       - run: Compress-Archive dist/AK-Riddler-Save-Editor AK-Riddler-Save-Editor.zip
+      # body_path, not a hand-written release: v1.0.0 shipped with an empty
+      # description because the release step passed only `files:`, and the
+      # release page is where every download link lands.
       - uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
-        with: { files: AK-Riddler-Save-Editor.zip }
+        with:
+          files: AK-Riddler-Save-Editor.zip
+          body_path: .github/RELEASE_NOTES.md
 
 # ---------------------------------------------------------------------------
 # There is no build provenance attestation here. It was removed deliberately,
